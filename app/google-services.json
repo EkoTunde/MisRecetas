@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "187490799270",
+    "firebase_url": "https://mis-recetas-966bd.firebaseio.com",
+    "project_id": "mis-recetas-966bd",
+    "storage_bucket": "mis-recetas-966bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187490799270:android:adac6049ad87c0950eae67",
+        "android_client_info": {
+          "package_name": "com.ekosoftware.misrecetas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187490799270-nbfhoc29d3kjo48fumns4u14tckg6p7b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmNMgc7e7Vqz_ulUoNr3r-qPqHd68gaiM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "187490799270-nbfhoc29d3kjo48fumns4u14tckg6p7b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

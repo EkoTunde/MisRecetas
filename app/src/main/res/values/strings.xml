@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Mis recetas</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="register">Registro</string>
+    <string name="login_msg">Iniciá sesión</string>
+    <string name="register_msg">O registrate</string>
+    <string name="or">– o –</string>
+    <string name="user_label">Usuario</string>
+    <string name="password_label">Contraseña</string>
+    <string name="login">Ingresar</string>
+    <string name="name">Nombre</string>
+    <string name="surname">Apellido</string>
+    <string name="email">Correo electrónico</string>
+    <string name="create_account_title">Crear una cuenta en Mis Recetas</string>
+    <string name="cancel">Cancelar</string>
+    <string name="choose_password_title">Elige una contraseña</string>
+    <string name="repeat_password_title">Repite la contraseña</string>
+    <string name="welcome_back_title">Bienvenido de nuevo a Mis Recetas. Ingresá tus credenciales para continuar.</string>
+    <string name="retry">Reintentar</string>
+    <string name="welcome_user">Bienvenid@ %s</string>
+    <string name="sign_in_message">Tenés que iniciar sesión o crear una cuenta para continuar.</string>
+    <string name="exit_app">Salir</string>
+    <string name="continue_login">Continuar</string>
+    <string name="non_user_data_recopilation_msg" tools:ignore="Typos">Mis Recetas no te solicitará ningún tipo información personal en ningún momento.</string>
+    <string name="anonymous">Anónimo</string>
+    <string name="hard">Dificil</string>
+    <string name="easy">Fácil</string>
+    <string name="normal">Normal</string>
+</resources>

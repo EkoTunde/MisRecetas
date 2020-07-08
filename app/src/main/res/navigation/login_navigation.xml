@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_navigation"
+    app:startDestination="@id/homeLoginFragment">
+
+    <fragment
+        android:id="@+id/homeLoginFragment"
+        android:name="com.ekosoftware.misrecetas.presentation.login.ui.home.HomeLoginFragment"
+        android:label="fragment_home_login"
+        tools:layout="@layout/fragment_home_login" >
+        <action
+            android:id="@+id/action_homeLoginFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.ekosoftware.misrecetas.presentation.login.ui.login.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" />
+</navigation>
