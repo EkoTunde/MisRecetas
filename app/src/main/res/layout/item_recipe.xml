@@ -13,14 +13,14 @@
 
         <ImageView
             android:id="@+id/recipe_image"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_marginEnd="8dp"
-            app:srcCompat="@mipmap/chef_hat"
             android:contentDescription="@string/app_name"
             android:cropToPadding="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/chef_hat" />
 
         <TextView
             android:id="@+id/txt_name"
@@ -42,9 +42,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
-            android:maxLines="1"
             android:fontFamily="@font/montserrat_regular"
+            android:maxLines="1"
             android:textColor="@color/colorAccent"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,6 +58,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/recipe_image"
@@ -96,41 +98,7 @@
                 android:textSize="14sp"
                 tools:text="7" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:fontFamily="@font/montserrat_bold"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
-                android:textSize="14sp"
-                tools:text="·" />
-
-            <TextView
-                android:id="@+id/txt_difficulty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat_regular"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
-                android:textSize="14sp"
-                tools:text="hard"
-                android:textAllCaps="true"/>
-
         </LinearLayout>
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="?android:attr/ratingBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginStart="8dp"
-            android:max="5"
-            android:numStars="5"
-            android:stepSize="0.1"
-            app:layout_constraintStart_toEndOf="@+id/recipe_image"
-            app:layout_constraintTop_toBottomOf="@+id/preview_details_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

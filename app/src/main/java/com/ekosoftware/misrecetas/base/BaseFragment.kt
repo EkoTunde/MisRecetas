@@ -1,5 +1,7 @@
 package com.ekosoftware.misrecetas.base
 
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE

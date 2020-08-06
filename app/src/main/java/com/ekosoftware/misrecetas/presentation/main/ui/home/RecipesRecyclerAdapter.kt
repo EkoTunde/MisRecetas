@@ -1,6 +1,5 @@
 package com.ekosoftware.misrecetas.presentation.main.ui.home
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.data.model.Difficulty
-import com.ekosoftware.misrecetas.data.model.Difficulty.*
-import com.ekosoftware.misrecetas.data.model.Recipe
+import com.ekosoftware.misrecetas.domain.model.Recipe
 import kotlinx.android.synthetic.main.item_recipe.view.*
 
 class RecipesRecyclerAdapter(private val interaction: Interaction? = null) :
@@ -65,20 +62,6 @@ class RecipesRecyclerAdapter(private val interaction: Interaction? = null) :
             val timeRequired = "${item.timeRequired}'"
             itemView.txt_time_required.text = timeRequired
             itemView.txt_servings.text = "${item.servings}"
-            item.difficulty?.let {
-                val difficulty = getDifficultyLabel(item.difficulty!!, itemView.context)
-                itemView.txt_difficulty.text = difficulty
-            }
-            itemView.ratingBar.rating = item.rating?.toFloat() ?: 0.0F
-
-        }
-
-        private fun getDifficultyLabel(difficulty: Difficulty, context: Context): String {
-            return when (difficulty) {
-                HARD -> context.getString(R.string.hard)
-                NORMAL -> context.getString(R.string.normal)
-                EASY -> context.getString(R.string.easy)
-            }
         }
     }
 

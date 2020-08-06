@@ -32,8 +32,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        navController = findNavController(R.id.nav_host_fragment)
-        NavigationUI.setupActionBarWithNavController(this@MainActivity, navController)
+        /*navController = findNavController(R.id.nav_host_fragment)
+        NavigationUI.setupActionBarWithNavController(this@MainActivity, navController)*/
     }
 
     override fun onSupportNavigateUp(): Boolean {

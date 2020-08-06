@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.main.ui.addedit.AddEditRecipeFragment">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_add_edit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/white"
+                android:elevation="2dp"
+                android:orientation="vertical">
+
+                <!-- PICTURE -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@android:color/darker_gray"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/recipe_placeholder_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/app_name"
+                        android:drawableTop="@drawable/ic_outline_camera_alt_24"
+                        android:text="@string/add_recipe_photo_image"
+                        android:textAlignment="center"
+                        android:tint="@color/colorDarkerGrey"
+                        app:drawableTint="#454545" />
+
+                    <ImageView
+                        android:id="@+id/recipe_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/app_name"
+                        android:tint="@color/colorAccent"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ic_outline_camera_alt_24" />
+
+                </LinearLayout>
+
+                <!-- BASIC INFO -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="@string/name"
+                        app:endIconDrawable="@drawable/ic_outline_cancel_24"
+                        app:endIconMode="clear_text"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_outline_label_24">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/txt_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="flagNavigateNext"
+                            android:inputType="text|textCapSentences" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/description"
+                        app:endIconDrawable="@drawable/ic_outline_cancel_24"
+                        app:endIconMode="clear_text"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/ic_outline_description_24">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/txt_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapSentences|textLongMessage" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/total_time"
+                        app:endIconDrawable="@drawable/ic_outline_cancel_24"
+                        app:endIconMode="clear_text"
+                        app:errorEnabled="true"
+                        app:helperText="@string/helper_text_total_time"
+                        app:helperTextEnabled="true"
+                        app:startIconDrawable="@drawable/ic_timer"
+                        app:suffixText="@string/suffix_total_time">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/txt_time_required"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
+                            android:inputType="number" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/total_servings"
+                        app:endIconDrawable="@drawable/ic_outline_cancel_24"
+                        app:endIconMode="clear_text"
+                        app:errorEnabled="true"
+                        app:helperText="@string/helper_text_total_servings"
+                        app:helperTextEnabled="true"
+                        app:startIconDrawable="@drawable/ic_outline_group_24"
+                        app:suffixText="@string/suffix_total_servings">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/txt_servings"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone"
+                            android:inputType="number" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- INGREDIENTS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/white"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/txt_ingredients_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="@string/ingredients_title" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ingredients_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    tools:listitem="@layout/item_ingredient" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_add_ingredient"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/add_ingredient"
+                    android:textColor="@color/colorDarkerGrey"
+                    app:drawableTint="@color/colorDarkerGrey"
+                    app:icon="@drawable/ic_add"
+                    app:iconTint="@color/colorDarkerGrey" />
+
+            </LinearLayout>
+
+            <!-- INSTRUCTIONS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/white"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/txt_instructions_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="@string/instructions_title" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/instructions_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    tools:listitem="@layout/item_ingredient" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_add_instruction"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/add_instruction"
+                    android:textColor="@color/colorDarkerGrey"
+                    app:drawableTint="@color/colorDarkerGrey"
+                    app:icon="@drawable/ic_add"
+                    app:iconTint="@color/colorDarkerGrey" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

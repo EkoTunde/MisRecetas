@@ -1,4 +1,4 @@
-package com.ekosoftware.misrecetas.data.model
+package com.ekosoftware.misrecetas.domain.model
 
 object CurrentUser {
 

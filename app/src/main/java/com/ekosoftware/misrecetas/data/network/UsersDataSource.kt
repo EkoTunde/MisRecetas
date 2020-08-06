@@ -1,7 +1,7 @@
 package com.ekosoftware.misrecetas.data.network
 
-import com.ekosoftware.misrecetas.data.model.CurrentUser
-import com.ekosoftware.misrecetas.data.model.User
+import com.ekosoftware.misrecetas.domain.model.CurrentUser
+import com.ekosoftware.misrecetas.domain.model.User
 import com.ekosoftware.misrecetas.vo.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -44,8 +44,8 @@ class UsersDataSource {
 
     // Retrieves user data from firestore, with the user uid provided by FirebaseAuth
     suspend fun getUserData(): Resource<User> {
-        val mdata = currentUser?.metadata
-        val z = mdata?.creationTimestamp
+        /*val mdata = currentUser?.metadata
+        val z = mdata?.creationTimestamp*/
         currentUser?.let {
             val result = usersRef.document(it.uid).get().await()
             val user = result.toObject(User::class.java) ?: throw Exception(NO_USER_FOUND)

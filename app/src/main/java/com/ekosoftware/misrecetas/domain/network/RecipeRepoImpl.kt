@@ -1,6 +1,6 @@
 package com.ekosoftware.misrecetas.domain.network
 
-import com.ekosoftware.misrecetas.data.model.Recipe
+import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.data.network.RecipesDataSource
 import com.ekosoftware.misrecetas.vo.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,9 +11,12 @@ class RecipeRepoImpl(private val recipesDataSource: RecipesDataSource) : RecipeR
     @ExperimentalCoroutinesApi
     override suspend fun getUserRecipes(): Flow<Resource<List<Recipe>>> = recipesDataSource.getAllRecipes()
 
-    override suspend fun addRecipe(recipe: Recipe): Resource<Boolean> = addRecipe(recipe)
+    @ExperimentalCoroutinesApi
+    override suspend fun getRecipes(filter: String): Flow<Resource<List<Recipe>>> = recipesDataSource.getRecipes(filter)
 
-    override suspend fun updateRecipe(recipe: Recipe): Resource<Boolean> = updateRecipe(recipe)
+    override suspend fun addRecipe(recipe: Recipe): Resource<String> = recipesDataSource.addRecipe(recipe)
 
-    override suspend fun deleteRecipe(docId: String): Resource<Boolean> = deleteRecipe(docId)
+    override suspend fun updateRecipe(recipe: Recipe): Resource<String> = recipesDataSource.updateRecipe(recipe)
+
+    override suspend fun deleteRecipe(recipe: Recipe): Resource<String> = recipesDataSource.deleteRecipe(recipe)
 }

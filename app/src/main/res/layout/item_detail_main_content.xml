@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:text="Un guiso originado a principos del siglo XX en una Buenos Aires en construcción. Ideal para familias numerosas.">
+
+        <TextView
+            android:id="@+id/author_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/author_title" />
+
+        <TextView
+            android:id="@+id/txt_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_medium"
+            android:textColor="@color/colorAccent"
+            tools:text="Juan Cruz Maciel Henning" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_time_required"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_timer_18"
+        android:drawablePadding="4dp"
+        android:textAlignment="center"
+        tools:text="30'" />
+
+    <TextView
+        android:id="@+id/txt_servings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_group_18"
+        android:drawablePadding="4dp"
+        android:textAlignment="center"
+        tools:text="5 personas" />
+
+    <LinearLayout
+        android:id="@+id/layout_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:weightSum="20">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/app_name"
+            android:tint="@android:color/darker_gray"
+            app:srcCompat="@drawable/ic_quote_24" />
+
+        <TextView
+            android:id="@+id/txt_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="19"
+            android:fontFamily="@font/montserrat_regular"
+            tools:text="Un guiso originado en principos del siglo XX en una Buenos Aires en construcción. Ideal para familias numerosas." />
+
+    </LinearLayout>
+
+</LinearLayout>
