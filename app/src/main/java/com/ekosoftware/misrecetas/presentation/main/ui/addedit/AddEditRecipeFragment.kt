@@ -2,10 +2,10 @@ package com.ekosoftware.misrecetas.presentation.main.ui.addedit
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -13,12 +13,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.data.network.RecipesDataSource
 import com.ekosoftware.misrecetas.data.network.UsersDataSource
 import com.ekosoftware.misrecetas.databinding.FragmentAddEditRecipeBinding
+import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.domain.network.RecipeRepoImpl
 import com.ekosoftware.misrecetas.domain.network.UserRepoImpl
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapters.IngredientRecyclerAdapter
@@ -26,10 +25,13 @@ import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapters.Instruct
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.Event
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.RecipeEvent
+import com.ekosoftware.misrecetas.util.GlideApp
 import com.ekosoftware.misrecetas.util.IngredientsInstructionsIItemTouchHelper
 import com.ekosoftware.misrecetas.vo.VMFactory
 import com.google.firebase.Timestamp
-import java.lang.Exception
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class AddEditRecipeFragment : Fragment() {
@@ -44,8 +46,8 @@ class AddEditRecipeFragment : Fragment() {
     private val ingredientsList = mutableListOf<String>()
     private val instructionsList = mutableListOf<String>()
 
-    private lateinit var ingredientsRecyclerAdapter: IngredientRecyclerAdapter
-    private lateinit var instructionsRecyclerAdapter: InstructionsRecyclerAdapter
+    private lateinit var ingredientsAdapter: IngredientRecyclerAdapter
+    private lateinit var instructionsAdapter: InstructionsRecyclerAdapter
 
     private val homeViewModel by activityViewModels<MainViewModel> {
         VMFactory(
@@ -62,11 +64,7 @@ class AddEditRecipeFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         _binding = FragmentAddEditRecipeBinding.inflate(inflater, container, false)
         return binding.root
@@ -92,7 +90,7 @@ class AddEditRecipeFragment : Fragment() {
         binding.toolbarAddEdit.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_item_save -> {
-                    Toast.makeText(requireContext(), "Ahora?", Toast.LENGTH_SHORT).show()
+                    save()
                     true
                 }
                 else -> false
@@ -101,67 +99,44 @@ class AddEditRecipeFragment : Fragment() {
     }
 
     private fun setUpButtons() {
-        binding.buttonAddIngredient.setOnClickListener {
-            val index = when {
-                ingredientsList.isEmpty() -> 0
-                ingredientSelected != null -> ingredientSelected!! + 1
-                else -> ingredientsList.size
-            }
-            addEmptyIngredients(index)
-        }
-        binding.buttonAddInstruction.setOnClickListener {
-            val index = when {
-                instructionsList.isEmpty() -> {
-                    Log.d("DEBUG!!!", "setUpButtons: lista vacia, devolvemos 0")
-                    0
-                }
-                instructionSelected != null -> {
-                    Log.d(
-                        "DEBUG!!!", "setUpButtons: instructionsSelected no es nulo, es: $instructionSelected, más uno es: " +
-                                "${instructionSelected!! + 1}"
-                    )
-                    instructionSelected!! + 1
-                }
-                else -> {
-                    Log.d("DEBUG!!!", "setUpButtons: se devuelve el tamaño de la lista: ${instructionsList.size}")
-                    instructionsList.size
-                }
-            }
-            addEmptyInstructions(index)
-        }
+        binding.buttonAddIngredient.setOnClickListener { addEmptyIngredients(ingredientsList.size) }
+        binding.buttonAddInstruction.setOnClickListener { addEmptyInstructions(instructionsList.size) }
     }
 
     private fun addEmptyIngredients(vararg indexes: Int) {
         indexes.forEach { index ->
             ingredientsList.add(index, "")
-            ingredientsRecyclerAdapter.submitList(ingredientsList)
-            ingredientsRecyclerAdapter.notifyItemInserted(index)
+            ingredientsAdapter.apply {
+                submitList(ingredientsList)
+                notifyItemInserted(index)
+            }
         }
     }
 
     private fun addEmptyInstructions(vararg indexes: Int) {
         indexes.forEach { index ->
             instructionsList.add(index, "")
-            instructionsRecyclerAdapter.submitList(instructionsList)
-            instructionsRecyclerAdapter.notifyItemInserted(index)
+            instructionsAdapter.apply {
+                submitList(instructionsList)
+                notifyItemInserted(index)
+                setFocusableItems(index)
+            }
             binding.ingredientsRecycler.smoothScrollToPosition(index)
         }
     }
 
-    private var ingredientSelected: Int? = null
-
     private val ingredientsInteraction = object : IngredientRecyclerAdapter.Interaction {
         override fun addLine(position: Int) {
             ingredientsList.add(position + 1, "")
-            ingredientsRecyclerAdapter.submitList(ingredientsList)
-            ingredientsRecyclerAdapter.notifyItemInserted(position + 1)
-            binding.ingredientsRecycler.smoothScrollToPosition(position)
+            ingredientsAdapter.submitList(ingredientsList)
+            ingredientsAdapter.notifyItemInserted(position + 1)
+            binding.ingredientsRecycler.smoothScrollToPosition(position + 1)
         }
 
         override fun onDelete(position: Int) {
             ingredientsList.removeAt(position)
-            ingredientsRecyclerAdapter.submitList(ingredientsList)
-            ingredientsRecyclerAdapter.notifyItemRemoved(position)
+            ingredientsAdapter.submitList(ingredientsList)
+            ingredientsAdapter.notifyItemRemoved(position)
             try {
                 binding.ingredientsRecycler.smoothScrollToPosition(position + 1)
             } catch (e: Exception) {
@@ -170,125 +145,207 @@ class AddEditRecipeFragment : Fragment() {
         }
 
         override fun onFocus(position: Int) {
-            ingredientSelected = position
         }
 
         override fun onMoved(fromPosition: Int, toPosition: Int) {
-            ingredientsRecyclerAdapter.notifyItemMoved(fromPosition, toPosition)
+            ingredientsAdapter.notifyItemMoved(fromPosition, toPosition)
             val fromItem = ingredientsList[fromPosition]
             ingredientsList.removeAt(fromPosition)
             ingredientsList.add(toPosition, fromItem)
-            ingredientsRecyclerAdapter.submitList(ingredientsList)
+            ingredientsAdapter.submitList(ingredientsList)
         }
 
         override fun onItemUpdated(position: Int, newText: String) {
             ingredientsList[position] = newText
-            ingredientsRecyclerAdapter.submitList(ingredientsList)
+            ingredientsAdapter.submitList(ingredientsList)
         }
     }
 
     private fun initIngredientsRecyclerView() {
         binding.ingredientsRecycler.apply {
             layoutManager = LinearLayoutManager(this@AddEditRecipeFragment.requireContext())
-            ingredientsRecyclerAdapter = IngredientRecyclerAdapter(ingredientsInteraction)
-            adapter = ingredientsRecyclerAdapter
+            ingredientsAdapter = IngredientRecyclerAdapter(ingredientsInteraction)
+            adapter = ingredientsAdapter
 
-            val ingredientsCallback = IngredientsInstructionsIItemTouchHelper(ingredientsRecyclerAdapter)
+            preserveFocusAfterLayout = true
+
+            val ingredientsCallback = IngredientsInstructionsIItemTouchHelper(ingredientsAdapter)
             val itemTouchHelper = ItemTouchHelper(ingredientsCallback)
-            ingredientsRecyclerAdapter.setTouchHelper(itemTouchHelper)
+            ingredientsAdapter.setTouchHelper(itemTouchHelper)
             itemTouchHelper.attachToRecyclerView(this)
         }
     }
 
-    private var instructionSelected: Int? = null
-
     private val instructionsInteraction = object : InstructionsRecyclerAdapter.Interaction {
-        override fun addLine(position: Int) {
-            instructionsList.add(position + 1, "")
-            instructionsRecyclerAdapter.submitList(instructionsList)
-            instructionsRecyclerAdapter.notifyItemInserted(position + 1)
-            instructionsRecyclerAdapter.notifyItemRangeChanged(position, instructionsList.size - position)
-            binding.instructionsRecycler.smoothScrollToPosition(position)
+
+        override fun addLine(position: Int, fromItemCurrentCursorIndex: Int) {
+            instructionsAdapter.apply {
+
+                // Allows only new item to gain focus when list is updated
+                setFocusableItems(position + 1)
+
+                // "From item" represents the item from which a new item will be inserted
+                val fromItemOldText = instructionsList[position]
+
+                val fromItemNewText = fromItemOldText.substring(0, fromItemCurrentCursorIndex) // Text until cursor
+                instructionsList[position] = fromItemNewText // Updates "From item" value
+
+                val newItemText = fromItemOldText.substring(fromItemCurrentCursorIndex) // Text from cursor onwards
+                instructionsList.add(position + 1, newItemText) // add new item to list
+
+                submitList(instructionsList) // Update adapter's list
+                notifyItemChanged(position) // Notify adapter "From item" has changed
+                notifyItemInserted(position + 1) // Notify adapter of new item
+
+                // Forces following items to update so they accurately indicate the step (a.k.a. adapterPosition + 1) by the hint
+                notifyItemRangeChanged(position + 1, instructionsList.size)
+            }
+            binding.instructionsRecycler.smoothScrollToPosition(position + 1)
         }
 
         override fun onDelete(position: Int) {
-            instructionsList.removeAt(position)
-            instructionsRecyclerAdapter.submitList(instructionsList)
-            instructionsRecyclerAdapter.notifyItemRemoved(position)
-            instructionsRecyclerAdapter.notifyItemRangeChanged(position, instructionsList.size - position)
+
+            instructionsList.removeAt(position) // Remove item from list
+            instructionsAdapter.apply {
+                submitList(instructionsList) // Update adapter's list
+                notifyItemRemoved(position)
+
+                // Forces following items to update so they accurately indicate the step (a.k.a. adapterPosition + 1) by the hint
+                notifyItemRangeChanged(position, instructionsList.size)
+            }
             try {
-                binding.instructionsRecycler.smoothScrollToPosition(position + 1)
+                binding.instructionsRecycler.smoothScrollToPosition(position)
             } catch (e: Exception) {
                 Log.d("DEBUG!!!", "onDelete: Position $position doesn't exist")
             }
         }
 
-        override fun onFocus(position: Int) {
-            instructionSelected = position
-        }
+        /* override fun onFocus(position: Int) {
+         }*/
 
         override fun onMoved(fromPosition: Int, toPosition: Int) {
-            instructionsRecyclerAdapter.notifyItemMoved(fromPosition, toPosition)
+            instructionsAdapter.notifyItemMoved(fromPosition, toPosition)
             val fromItem = instructionsList[fromPosition]
             instructionsList.removeAt(fromPosition)
             instructionsList.add(toPosition, fromItem)
-            instructionsRecyclerAdapter.submitList(instructionsList)
+            instructionsAdapter.submitList(instructionsList)
             if (fromPosition <= toPosition) {
-                instructionsRecyclerAdapter.notifyItemRangeChanged(fromPosition, toPosition - fromPosition + 1)
+                instructionsAdapter.notifyItemRangeChanged(fromPosition, toPosition - fromPosition + 1)
             } else {
-                instructionsRecyclerAdapter.notifyItemRangeChanged(toPosition, fromPosition - toPosition + 1)
+                instructionsAdapter.notifyItemRangeChanged(toPosition, fromPosition - toPosition + 1)
             }
         }
 
         override fun onItemUpdated(position: Int, newText: String) {
             instructionsList[position] = newText
-            instructionsRecyclerAdapter.submitList(instructionsList)
+            instructionsAdapter.submitList(instructionsList)
         }
     }
 
     private fun initInstructionsRecyclerView() {
         binding.instructionsRecycler.apply {
             layoutManager = LinearLayoutManager(this@AddEditRecipeFragment.requireContext())
-            instructionsRecyclerAdapter =
+            instructionsAdapter =
                 InstructionsRecyclerAdapter(this@AddEditRecipeFragment.requireContext(), instructionsInteraction)
-            adapter = instructionsRecyclerAdapter
+            adapter = instructionsAdapter
 
-            val instructionsCallback = IngredientsInstructionsIItemTouchHelper(instructionsRecyclerAdapter)
+            val instructionsCallback = IngredientsInstructionsIItemTouchHelper(instructionsAdapter)
             val itemTouchHelper = ItemTouchHelper(instructionsCallback)
-            instructionsRecyclerAdapter.setTouchHelper(itemTouchHelper)
+            instructionsAdapter.setTouchHelper(itemTouchHelper)
             itemTouchHelper.attachToRecyclerView(this)
         }
     }
 
     private fun fillFields() {
-        inputRecipe?.let {
-            setImage()
-            binding.txtName.setText(it.name)
-            binding.txtDescription.setText(it.description)
-            binding.txtTimeRequired.setText(it.timeRequired.toString())
-            binding.txtServings.setText(it.servings.toString())
-            fillIngredients()
-            fillInstructions()
+        setImage()
+        fillIngredients()
+        fillInstructions()
+
+        binding.apply {
+
+            binding.txtName.apply {
+                txtName.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                    binding.txtNameLayout.isEndIconVisible = hasFocus
+                }
+                setText(inputRecipe?.name ?: "")
+            }
+
+            binding.txtDescription.apply {
+                onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                    binding.txtDescriptionLayout.isEndIconVisible = hasFocus
+                }
+                setText(inputRecipe?.description ?: "")
+            }
+
+            binding.txtTimeRequired.apply {
+                onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                    binding.txtTimeRequiredLayout.isEndIconVisible = hasFocus
+                }
+                val timeRequired = if (inputRecipe?.timeRequired.toString() != "null") {
+                    inputRecipe?.timeRequired.toString()
+                } else {
+                    ""
+                }
+                setText(timeRequired)
+            }
+
+            binding.txtServings.apply {
+                onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                    binding.txtServingsLayout.isEndIconVisible = hasFocus
+                }
+                val servings = if (inputRecipe?.servings.toString() != "null") inputRecipe?.servings.toString() else ""
+                setText(servings)
+            }
+
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.recipeImage.apply {
+                    isFocusableInTouchMode = true
+                    requestFocus()
+                }
+                binding.txtName.apply {
+                    isFocusableInTouchMode = true
+                    requestFocus()
+                }
+            }
         }
     }
 
     private fun setImage() {
-        inputRecipe?.imageUrl?.let { image ->
+        inputRecipe!!.imageUrl!!.let { image ->
             binding.recipePlaceholderImage.visibility = View.GONE
             binding.imageLayout.visibility = View.VISIBLE
-            Glide.with(requireContext()).load(image).into(binding.recipeImage)
+            GlideApp.with(this@AddEditRecipeFragment)
+                .load(image)
+                .centerCrop()
+                .into(binding.recipeImage)
             return
         }
-        binding.recipePlaceholderImage.visibility = View.VISIBLE
-        binding.imageLayout.visibility = View.GONE
+        /*binding.recipePlaceholderImage.visibility = View.VISIBLE
+        binding.imageLayout.visibility = View.GONE*/
     }
 
-    private fun fillIngredients() = inputRecipe!!.ingredients?.let {
-        if (it.isNotEmpty()) ingredientsList.addAll(it) else addEmptyIngredients(0, 1)
+    private fun fillIngredients() {
+        if (inputRecipe == null || inputRecipe!!.ingredients.isNullOrEmpty()) {
+            addEmptyIngredients(0, 1)
+        } else {
+            ingredientsList.addAll(inputRecipe!!.ingredients!!)
+            ingredientsAdapter.apply {
+                submitList(ingredientsList)
+                notifyDataSetChanged()
+            }
+        }
     }
 
-    private fun fillInstructions() = inputRecipe!!.instructions?.let {
-        if (it.isNotEmpty()) ingredientsList.addAll(it) else addEmptyInstructions(0, 1)
+    private fun fillInstructions() {
+        if (inputRecipe == null || inputRecipe!!.instructions.isNullOrEmpty()) {
+            addEmptyInstructions(0, 1)
+        } else {
+            instructionsList.addAll(inputRecipe!!.instructions!!)
+            instructionsAdapter.apply {
+                submitList(instructionsList)
+                notifyDataSetChanged()
+            }
+        }
     }
 
     private fun save() {
@@ -343,8 +400,8 @@ class AddEditRecipeFragment : Fragment() {
 
     private fun TextView.hasNoText(): Boolean = this.text.toString().isEmpty()
 
-    private fun errorCompulsoryField(ingredients: Boolean = false, instructions: Boolean = false) =
-        when {
+    private fun errorCompulsoryField(ingredients: Boolean = false, instructions: Boolean = false): String {
+        return when {
             !ingredients && !instructions -> {
                 requireContext().getString(R.string.compulsatory_field)
             }
@@ -356,6 +413,7 @@ class AddEditRecipeFragment : Fragment() {
             }
             else -> throw IllegalArgumentException("Ingredient and instructions can't be voth true.")
         }
+    }
 
     private fun getFieldsValues(): Recipe {
         return Recipe(

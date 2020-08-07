@@ -30,6 +30,7 @@
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:descendantFocusability="afterDescendants"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_add_edit">
 
@@ -37,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/darker_gray"
+            android:descendantFocusability="afterDescendants"
             android:orientation="vertical">
 
             <LinearLayout
@@ -44,6 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:background="@android:color/white"
+                android:descendantFocusability="afterDescendants"
                 android:elevation="2dp"
                 android:orientation="vertical">
 
@@ -66,7 +69,7 @@
                         <ImageView
                             android:id="@+id/recipe_image"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="300dp"
                             android:contentDescription="@string/app_name"
                             android:maxHeight="500dp" />
 
@@ -104,13 +107,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:descendantFocusability="afterDescendants"
                     android:orientation="vertical"
                     android:padding="16dp">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txt_name_layout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:descendantFocusability="afterDescendants"
                         android:hint="@string/name"
                         app:endIconDrawable="@drawable/ic_outline_cancel_24"
                         app:endIconMode="clear_text"
@@ -121,12 +127,17 @@
                             android:id="@+id/txt_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:enabled="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
                             android:imeOptions="flagNavigateNext"
-                            android:inputType="text|textCapSentences" />
+                            android:inputType="text|textCapSentences"
+                            android:visibility="visible" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txt_description_layout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -146,6 +157,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txt_time_required_layout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -168,6 +180,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/txt_servings_layout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

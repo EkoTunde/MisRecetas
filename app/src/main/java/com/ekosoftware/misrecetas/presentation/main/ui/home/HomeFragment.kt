@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -14,13 +13,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.base.BaseFragment
-import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.data.network.RecipesDataSource
 import com.ekosoftware.misrecetas.databinding.FragmentHomeBinding
+import com.ekosoftware.misrecetas.domain.model.Recipe
+import com.ekosoftware.misrecetas.domain.model.User
 import com.ekosoftware.misrecetas.domain.network.RecipeRepoImpl
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainVMFactory
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.vo.Resource
+import com.google.firebase.Timestamp
 
 class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
 
@@ -58,7 +59,34 @@ class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
 
         binding.btnAddRecipe.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment(
-                null,
+                Recipe(
+                    "aaaa",
+                    "El strudel de la abuela",
+                    "Improvisar es bueno, decía ella",
+                    "https://elgourmet.s3.amazonaws.com/recetas/cover/strud_axYg39T1JkDQF4vh2Od5GRzweKHqVS.png",
+                    30L,
+                    4,
+                    listOf(
+                        "5 manzanas",
+                        "250 gr de harina",
+                        "2 cuharadas de azucar"
+                    ),
+                    listOf(
+                        "Mezclamos el harina con el azucar hasta formar una masa lisa y suave",
+                        "Ponemos las manzanas",
+                        "Al horno media hora y a comer!"
+                    ),
+                    Timestamp.now(),
+                    User(
+                        "bbbb",
+                        "Juan Cruz Maciel Henning",
+                        null,
+                        "juan_cm94@hotmail.com",
+                        null
+                    ),
+                    true,
+                    listOf("strudel", "abuela")
+                )/*null*/,
                 getString(R.string.add_recipe)
             )
             findNavController().navigate(action)

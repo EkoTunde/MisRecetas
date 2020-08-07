@@ -43,25 +43,30 @@ class InstructionsRecyclerAdapter(private val context: Context, private val inte
             itemView.apply {
                 updateView()
                 setOnTouchListener(this@InstructionsViewHolder)
+                textInputLayoutInstruction.hint = context.getString(R.string.current_step_placeholder, absoluteAdapterPosition + 1)
                 text_input_instruction.apply {
                     setText(item)
                     setOnEditorActionListener(object : TextView.OnEditorActionListener {
                         override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
                             if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                                interaction?.addLine(absoluteAdapterPosition)
+                                // Send cursor's position so fragment can take cursor's following text
+                                // to create the new line. If cursor is text's last index, the new line item's value
+                                // will be an empty String
+                                val cursorPosition = text_input_instruction.selectionStart
+                                interaction?.addLine(absoluteAdapterPosition, cursorPosition)
                                 return true
                             }
                             return false
                         }
                     })
-                    setOnClickListener {
+                    /*setOnClickListener {
                         interaction?.onFocus(absoluteAdapterPosition)
                     }
                     onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
                         if (hasFocus) {
                             interaction?.onFocus(absoluteAdapterPosition)
                         }
-                    }
+                    }*/
 
                     addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(s: Editable?) {
@@ -81,8 +86,6 @@ class InstructionsRecyclerAdapter(private val context: Context, private val inte
         }
 
         fun updateView() {
-            //itemView.current_step_text.text = context.getString(R.string.current_step_placeholder, absoluteAdapterPosition+1)
-            //itemView.text_input_instruction.hint = context.getString(R.string.current_step_placeholder, absoluteAdapterPosition+1)
             itemView.textInputLayoutInstruction.hint = context.getString(R.string.current_step_placeholder, absoluteAdapterPosition + 1)
         }
 
@@ -115,9 +118,9 @@ class InstructionsRecyclerAdapter(private val context: Context, private val inte
     }
 
     interface Interaction {
-        fun addLine(position: Int)
+        fun addLine(position: Int, fromItemCurrentCursorIndex: Int)
         fun onDelete(position: Int)
-        fun onFocus(position: Int)
+        /*fun onFocus(position: Int)*/
         fun onMoved(fromPosition: Int, toPosition: Int)
         fun onItemUpdated(position: Int, newText: String)
     }
@@ -138,11 +141,21 @@ class InstructionsRecyclerAdapter(private val context: Context, private val inte
 
     override fun getItemCount(): Int = differ.currentList.size
 
+    // Holds an array of items positions which are allowed to gain focus when a notify#Changed occurs
+    private var focusableItems: IntArray = intArrayOf()
+
+    // Set the items which can gain focus when notify#Changed
+    fun setFocusableItems(vararg positions: Int) {
+        focusableItems = positions
+    }
+
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
         val instructionsViewHolder = holder as InstructionsViewHolder
         instructionsViewHolder.updateView()
-        holder.itemView.text_input_instruction.requestFocus()
+        if(focusableItems.contains(holder.absoluteAdapterPosition)) {
+            holder.itemView.text_input_instruction.requestFocus()
+        }
     }
 
     fun submitList(list: List<String>) {

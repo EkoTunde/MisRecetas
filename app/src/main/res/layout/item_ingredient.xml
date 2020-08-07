@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="8dp">
 
         <ImageButton
             android:id="@+id/button_drag"
@@ -30,23 +30,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
+            android:contentDescription="@string/ingredient"
             app:endIconDrawable="@drawable/ic_outline_cancel_24"
             app:endIconMode="clear_text"
             app:errorEnabled="false"
+            app:hintEnabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/button_delete"
             app:layout_constraintStart_toEndOf="@+id/button_drag"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/ingredient"
-            app:hintEnabled="false">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.ekosoftware.misrecetas.util.MultilineDoneTextInputEditText
                 android:id="@+id/text_input_ingredient"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/ingredient_suggestion"
                 android:imeOptions="actionNext"
-                android:inputType="textCapSentences|text" />
+                android:inputType="textMultiLine|textCapSentences|text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
