@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -11,6 +13,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.data.network.RecipesDataSource
@@ -53,6 +56,7 @@ class AddEditRecipeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         requireArguments().let {
             inputRecipe = it.getParcelable("recipe")
         }
@@ -63,6 +67,7 @@ class AddEditRecipeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         _binding = FragmentAddEditRecipeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -81,22 +86,17 @@ class AddEditRecipeFragment : Fragment() {
         val navController = findNavController()
         val appBarConfiguration = AppBarConfiguration(navController.graph)
 
-        binding.toolbar.toolbarAddEdit.setupWithNavController(navController, appBarConfiguration)
-    }
+        binding.toolbarAddEdit.setupWithNavController(navController, appBarConfiguration)
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_add_edit, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle menu item selection
-        return when (item.itemId) {
-            R.id.menu_item_save -> {
-                save()
-                true
+        // Handle menu item clicks - works different in Activity
+        binding.toolbarAddEdit.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_item_save -> {
+                    Toast.makeText(requireContext(), "Ahora?", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
             }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -262,6 +262,7 @@ class AddEditRecipeFragment : Fragment() {
 
     private fun fillFields() {
         inputRecipe?.let {
+            setImage()
             binding.txtName.setText(it.name)
             binding.txtDescription.setText(it.description)
             binding.txtTimeRequired.setText(it.timeRequired.toString())
@@ -269,6 +270,17 @@ class AddEditRecipeFragment : Fragment() {
             fillIngredients()
             fillInstructions()
         }
+    }
+
+    private fun setImage() {
+        inputRecipe?.imageUrl?.let { image ->
+            binding.recipePlaceholderImage.visibility = View.GONE
+            binding.imageLayout.visibility = View.VISIBLE
+            Glide.with(requireContext()).load(image).into(binding.recipeImage)
+            return
+        }
+        binding.recipePlaceholderImage.visibility = View.VISIBLE
+        binding.imageLayout.visibility = View.GONE
     }
 
     private fun fillIngredients() = inputRecipe!!.ingredients?.let {
@@ -329,9 +341,7 @@ class AddEditRecipeFragment : Fragment() {
         }
     }
 
-    private fun TextView.hasNoText(): Boolean {
-        return this.text.toString().isEmpty()
-    }
+    private fun TextView.hasNoText(): Boolean = this.text.toString().isEmpty()
 
     private fun errorCompulsoryField(ingredients: Boolean = false, instructions: Boolean = false) =
         when {

@@ -54,7 +54,7 @@
     <string name="add_recipe">Nueva receta</string>
     <string name="edit_recipe">Editar receta</string>
     <string name="ingredient_suggestion">250 ml de agua</string>
-    <string name="add_recipe_photo_image">Agregá una imagen que caracterice esta receta</string>
+    <string name="add_recipe_photo_image">Hacé click para agregar una imagen que caracterice esta receta</string>
     <string name="add_ingredient">Ingrediente</string>
     <string name="add_instruction">Paso</string>
     <string name="instruction_suggestion">Agregar el agua progresivamente, y mezclar hasta obtener una masa lisa y suave</string>
@@ -65,4 +65,6 @@
     <string name="delete_ingredient">Eliminar ingrediente</string>
     <string name="drag_ingredient">Arrastrar ingrediente</string>
     <string name="drag_instruction">Arrastrar paso</string>
+    <string name="edit_recipe_image">Editar la imagen de la receta</string>
+    <string name="click_here_to_add_image">Clickeá para agregar una imagen</string>
 </resources>

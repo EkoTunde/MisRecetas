@@ -6,19 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".presentation.main.ui.addedit.AddEditRecipeFragment">
 
-    <include
+    <!--<include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_add_edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_add_edit"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_add_edit"
+        app:navigationIcon="@drawable/ic_outline_clear_24"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_add_edit">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,34 +48,57 @@
                 android:orientation="vertical">
 
                 <!-- PICTURE -->
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="wrap_content"
                     android:background="@android:color/darker_gray"
                     android:gravity="center"
+                    android:minHeight="200dp"
                     android:orientation="vertical">
+
+                    <FrameLayout
+                        android:id="@+id/image_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/recipe_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/app_name"
+                            android:maxHeight="500dp" />
+
+                        <ImageButton
+                            android:id="@+id/button_edit_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|bottom"
+                            android:layout_margin="16dp"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="@string/edit_recipe_image"
+                            android:tint="@color/colorDarkerGrey"
+                            app:srcCompat="@drawable/ic_outline_edit_24" />
+
+                    </FrameLayout>
 
                     <TextView
                         android:id="@+id/recipe_placeholder_image"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:contentDescription="@string/app_name"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/click_here_to_add_image"
                         android:drawableTop="@drawable/ic_outline_camera_alt_24"
+                        android:lines="2"
+                        android:padding="16dp"
                         android:text="@string/add_recipe_photo_image"
                         android:textAlignment="center"
                         android:tint="@color/colorDarkerGrey"
                         app:drawableTint="#454545" />
 
-                    <ImageView
-                        android:id="@+id/recipe_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/app_name"
-                        android:tint="@color/colorAccent"
-                        android:visibility="gone"
-                        app:srcCompat="@drawable/ic_outline_camera_alt_24" />
-
-                </LinearLayout>
+                </FrameLayout>
 
                 <!-- BASIC INFO -->
                 <LinearLayout
@@ -75,7 +111,6 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:hint="@string/name"
                         app:endIconDrawable="@drawable/ic_outline_cancel_24"
                         app:endIconMode="clear_text"
