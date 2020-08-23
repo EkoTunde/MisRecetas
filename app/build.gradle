@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "com.ekosoftware.misrecetas"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -32,8 +32,8 @@ android {
     buildFeatures.viewBinding = true
 
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
@@ -50,7 +50,7 @@ dependencies {
     // Androidx
     implementation 'androidx.core:core-ktx:1.3.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha05'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
@@ -62,9 +62,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0-alpha02'
 
     // Kotlin Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.8'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8'
+
+    // WorkManager for kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:2.4.0"
 
     // Lifecycle: ViewModel & LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
@@ -79,18 +82,30 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
 
     // Firebase
-    implementation 'com.google.firebase:firebase-core:17.4.4'
-    implementation 'com.firebaseui:firebase-ui-auth:6.2.1'          // Auth UI
+    implementation 'com.google.firebase:firebase-core:17.5.0'
+    implementation 'com.firebaseui:firebase-ui-auth:6.2.1'          // AuthUI
     implementation 'com.google.firebase:firebase-firestore:21.5.0'  // Firestore
     implementation 'com.google.firebase:firebase-storage:19.1.1'    // Storage
+    implementation 'com.firebaseui:firebase-ui-storage:6.2.0'       // StorageUI
     implementation 'com.google.firebase:firebase-auth:19.3.2'       // Auth
     implementation 'com.google.firebase:firebase-perf:19.0.8'
-    implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
-    implementation 'com.google.firebase:firebase-analytics:17.4.4'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+
+    // CameraX core library using the camera2 implementation
+    def camerax_version = "1.0.0-beta08"
+    implementation "androidx.camera:camera-camera2:${camerax_version}"
+    // If you want to additionally use the CameraX Lifecycle library
+    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+    // If you want to additionally use the CameraX View class
+    implementation "androidx.camera:camera-view:1.0.0-alpha15"
+    // If you want to additionally use the CameraX Extensions library
+    implementation "androidx.camera:camera-extensions:1.0.0-alpha15"
 
     // Util
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
     // Testing
     testImplementation 'junit:junit:4.13'

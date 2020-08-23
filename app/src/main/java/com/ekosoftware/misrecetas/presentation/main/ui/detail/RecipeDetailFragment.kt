@@ -9,14 +9,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ekosoftware.misrecetas.R
+import com.ekosoftware.misrecetas.databinding.FragmentRecipeDetailBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.domain.model.User
-import com.ekosoftware.misrecetas.databinding.FragmentRecipeDetailBinding
 import com.ekosoftware.misrecetas.presentation.main.ui.detail.adapters.IngredientsAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.detail.adapters.InstructionsAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.detail.adapters.MainContentAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.detail.adapters.TitleAdapter
-import com.ekosoftware.misrecetas.presentation.main.ui.home.HomeFragmentDirections
 
 class RecipeDetailFragment : Fragment() {
 
@@ -93,7 +92,7 @@ class RecipeDetailFragment : Fragment() {
     }
 
     private fun editRecipe() {
-        val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment(null, getString(R.string.edit_recipe))
+        val action = RecipeDetailFragmentDirections.actionRecipeDetailFragmentToAddEditRecipeFragment()
         findNavController().navigate(action)
     }
 

@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.ekosoftware.misrecetas.R
 
-class IngredientsInstructionsIItemTouchHelper(
+class IngredientsInstructionsItemTouchHelper(
     private val adapter: ItemTouchHelperAdapter
 ) : ItemTouchHelper.Callback() {
 
     override fun isLongPressDragEnabled(): Boolean {
-        // Disable because this would be handle by ViewHolder inside RecyclerView
+        // Disabled because this would be handle by ViewHolder inside RecyclerView
         return false /*super.isLongPressDragEnabled()*/
     }
 

@@ -4,32 +4,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.base.BaseFragment
 import com.ekosoftware.misrecetas.data.network.RecipesDataSource
 import com.ekosoftware.misrecetas.databinding.FragmentHomeBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
-import com.ekosoftware.misrecetas.domain.model.User
 import com.ekosoftware.misrecetas.domain.network.RecipeRepoImpl
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainVMFactory
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.vo.Resource
-import com.google.firebase.Timestamp
+import kotlinx.android.synthetic.main.fragment_home.*
 
-class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
+class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
 
     private lateinit var recipesRecyclerAdapter: RecipesRecyclerAdapter
 
-    override val rootLayout: ViewGroup? get() = binding.root
-    override val mainLayouts: List<View> get() = listOf(binding.progressBar, binding.rvRecipes)
-    override val progressBar: View get() = binding.progressBar
+    fun showProgress() {
+        if (progressBar != null) {
+            progressBar.visibility = View.VISIBLE
+        }
+    }
+
+    fun hideProgress() {
+        if (progressBar != null) {
+            progressBar.visibility = View.GONE
+        }
+    }
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -39,7 +45,7 @@ class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
     private val binding get() = _binding!!
 
     private val viewModel by activityViewModels<MainViewModel> {
-        MainVMFactory(RecipeRepoImpl(RecipesDataSource()))
+        MainVMFactory(requireActivity().application, RecipeRepoImpl(RecipesDataSource()))
     }
 
     override fun onCreateView(
@@ -47,48 +53,18 @@ class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setUpNavigation()
         setUpRecyclerView()
-
-        binding.btnAddRecipe.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment(
-                Recipe(
-                    "aaaa",
-                    "El strudel de la abuela",
-                    "Improvisar es bueno, decía ella",
-                    "https://elgourmet.s3.amazonaws.com/recetas/cover/strud_axYg39T1JkDQF4vh2Od5GRzweKHqVS.png",
-                    30L,
-                    4,
-                    listOf(
-                        "5 manzanas",
-                        "250 gr de harina",
-                        "2 cuharadas de azucar"
-                    ),
-                    listOf(
-                        "Mezclamos el harina con el azucar hasta formar una masa lisa y suave",
-                        "Ponemos las manzanas",
-                        "Al horno media hora y a comer!"
-                    ),
-                    Timestamp.now(),
-                    User(
-                        "bbbb",
-                        "Juan Cruz Maciel Henning",
-                        null,
-                        "juan_cm94@hotmail.com",
-                        null
-                    ),
-                    true,
-                    listOf("strudel", "abuela")
-                )/*null*/,
-                getString(R.string.add_recipe)
-            )
+        
+        btn_add_recipe.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment()
             findNavController().navigate(action)
         }
 
@@ -98,11 +74,12 @@ class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
     private fun setUpNavigation() {
         val navController = findNavController()
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.toolbar.toolbarAddEdit.setupWithNavController(navController, appBarConfiguration)
+
+        toolbar_add_edit.setupWithNavController(navController, appBarConfiguration)
     }
 
     private fun setUpRecyclerView() {
-        binding.rvRecipes.apply {
+        rv_recipes.apply {
             layoutManager = LinearLayoutManager(requireContext())
             addItemDecoration(
                 DividerItemDecoration(
@@ -116,7 +93,7 @@ class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
     }
 
     private fun fetchData() {
-        viewModel.fetchRecipes.observe(requireActivity(), Observer { result ->
+        viewModel.fetchRecipes.observe(requireActivity(), { result ->
             when (result) {
                 is Resource.Loading -> {
                     showProgress()
@@ -135,6 +112,7 @@ class HomeFragment : BaseFragment(), RecipesRecyclerAdapter.Interaction {
     override fun onRecipeSelected(item: Recipe) {
         val action =
             HomeFragmentDirections.actionHomeFragmentToRecipeDetailFragment(item, item.name!!)
+        //viewModel.selectRecipe(item)
         findNavController().navigate(action)
     }
 

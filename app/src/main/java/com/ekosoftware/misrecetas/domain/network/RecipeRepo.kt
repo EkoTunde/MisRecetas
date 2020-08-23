@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface RecipeRepo {
     suspend fun getUserRecipes() : Flow<Resource<List<Recipe>>>
     suspend fun getRecipes(filter: String) : Flow<Resource<List<Recipe>>>
-    suspend fun addRecipe(recipe: Recipe) : Resource<String>
-    suspend fun updateRecipe(recipe: Recipe) : Resource<String>
-    suspend fun deleteRecipe(recipe: Recipe) : Resource<String>
+    suspend fun addRecipe(recipe: Recipe) : String
+    suspend fun updateRecipe(recipe: Recipe) : String
+    suspend fun deleteRecipe(recipe: Recipe) : String
 }

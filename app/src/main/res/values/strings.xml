@@ -66,5 +66,20 @@
     <string name="drag_ingredient">Arrastrar ingrediente</string>
     <string name="drag_instruction">Arrastrar paso</string>
     <string name="edit_recipe_image">Editar la imagen de la receta</string>
+    <string name="recipe_photo">Foto de la receta</string>
     <string name="click_here_to_add_image">Clickeá para agregar una imagen</string>
+    <string name="cancel_image_loading_content_description">Cancelar carga de imagen</string>
+    <string name="delete_image_option">Eliminar imagen</string>
+    <string name="add_edit_image_option">Aregar o editar imagen</string>
+    <string name="error_getting_image">Ocurrió un error al obtener la imagen</string>
+    <string name="edit">Editar</string>
+    <string name="failure_msg_placeholder">No se pudo %s %s</string>
+    <string name="success_msg_placeholder">Se acaba de %s %s</string>
+    <string name="add">agregar</string>
+    <string name="update">actualizar</string>
+    <string name="delete">eliminar</string>
+    <string name="updating_database">Actualizando la base de datos</string>
+    <string name="uploading_resources">Cargando recursos</string>
+    <string name="saving">Guardando</string>
+    <string name="deleting">Borrando</string>
 </resources>

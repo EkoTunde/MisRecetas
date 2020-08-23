@@ -1,12 +1,12 @@
 package com.ekosoftware.misrecetas.presentation.main.ui.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ekosoftware.misrecetas.domain.network.RecipeRepo
-import org.jetbrains.annotations.NotNull
 
-class MainVMFactory(private val recipeRepo: RecipeRepo) : ViewModelProvider.Factory {
+class MainVMFactory(private val application: Application, private val recipeRepo: RecipeRepo) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(RecipeRepo::class.java).newInstance(recipeRepo)
+        return modelClass.getConstructor(Application::class.java, RecipeRepo::class.java).newInstance(application, recipeRepo)
     }
 }

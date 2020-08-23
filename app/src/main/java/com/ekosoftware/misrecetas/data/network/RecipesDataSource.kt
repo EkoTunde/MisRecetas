@@ -4,8 +4,8 @@ import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.vo.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -16,6 +16,8 @@ class RecipesDataSource {
     companion object {
         private val db = FirebaseFirestore.getInstance()
         private val recipesRef = db.collection("recipes")
+        private val bucket = FirebaseStorage.getInstance().reference
+        const val RECIPES_BUCKET = "recipes_images"
     }
 
 
@@ -28,14 +30,14 @@ class RecipesDataSource {
 
             val listenerRegistration = recipesRef.whereEqualTo("creator", uid)
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                    firebaseFirestoreException?.let {
+                    /*firebaseFirestoreException?.let {
                         cancel(
                             message = it.message
                                 ?: "error fetching documents at ${System.currentTimeMillis()}",
                             cause = firebaseFirestoreException
                         )
                         return@addSnapshotListener
-                    }
+                    }*/
                     offer(
                         Resource.Success(
                             querySnapshot?.map { queryDocumentSnapshot ->
@@ -44,6 +46,7 @@ class RecipesDataSource {
                                 }
                             } ?: listOf())
                     )
+                    return@addSnapshotListener
                 }
             awaitClose {
                 listenerRegistration.remove()
@@ -58,14 +61,14 @@ class RecipesDataSource {
 
             val listenerRegistration = recipesRef.whereArrayContains("keywords", filter)
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                    firebaseFirestoreException?.let {
-                        cancel(
-                            message = it.message
-                                ?: "error fetching documents at ${System.currentTimeMillis()}",
-                            cause = firebaseFirestoreException
-                        )
-                        return@addSnapshotListener
-                    }
+                    /* firebaseFirestoreException?.let {
+                         cancel(
+                             message = it.message
+                                 ?: "error fetching documents at ${System.currentTimeMillis()}",
+                             cause = firebaseFirestoreException
+                         )
+                         return@addSnapshotListener
+                     }*/
                     offer(
                         Resource.Success(
                             querySnapshot?.map { queryDocumentSnapshot ->
@@ -74,6 +77,7 @@ class RecipesDataSource {
                                 }
                             } ?: listOf())
                     )
+                    return@addSnapshotListener
                 }
             awaitClose {
                 listenerRegistration.remove()
@@ -81,33 +85,24 @@ class RecipesDataSource {
         }
     }
 
-    suspend fun addRecipe(recipe: Recipe): Resource<String> {
+    suspend fun addRecipe(recipe: Recipe): String {
         recipesRef.add(recipe).await()
-        recipe.name?.let { name ->
-            return Resource.Success(name)
-        }
-        throw IllegalArgumentException("The recipe was successfully, but it hasn't got a name")
+        return recipe.name!!
     }
 
-    suspend fun updateRecipe(recipe: Recipe): Resource<String> {
+    suspend fun updateRecipe(recipe: Recipe): String {
         recipe.id?.let { docId ->
             recipesRef.document(docId).set(recipe).await()
-            recipe.name?.let { name ->
-                return Resource.Success(name)
-            }
-            throw IllegalArgumentException("The update was successful but the recipe hasn't got a name")
+            return recipe.name!!
         }
-        throw IllegalArgumentException("To update a recipe an id must be passed as a parameter")
+        throw IllegalArgumentException("Recipe id was null when trying to update")
     }
 
-    suspend fun deleteRecipe(recipe: Recipe): Resource<String> {
+    suspend fun deleteRecipe(recipe: Recipe): String {
         recipe.id?.let { id ->
             recipesRef.document(id).delete().await()
-            recipe.name?.let { name ->
-                return Resource.Success(name)
-            }
-            throw IllegalArgumentException("The update was successful but the recipe hasn't got a name")
+            return recipe.name!!
         }
-        throw IllegalArgumentException("To delete a recipe an id must be passed as a parameter")
+        throw IllegalArgumentException("Recipe id was null when trying to delete")
     }
 }
