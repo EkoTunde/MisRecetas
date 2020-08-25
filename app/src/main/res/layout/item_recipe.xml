@@ -37,66 +37,39 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Guiso de lentejas" />
 
-        <TextView
-            android:id="@+id/txt_creator"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="2dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/montserrat_regular"
-            android:maxLines="1"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/recipe_image"
-            app:layout_constraintTop_toBottomOf="@id/txt_name"
-            tools:text="Juan Cruz Maciel Henning" />
-
         <LinearLayout
             android:id="@+id/preview_details_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="2dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/recipe_image"
-            app:layout_constraintTop_toBottomOf="@+id/txt_creator">
+            app:layout_constraintTop_toBottomOf="@+id/txt_name">
 
             <TextView
                 android:id="@+id/txt_time_required"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_timer_18"
                 android:fontFamily="@font/montserrat_regular"
                 android:textAlignment="center"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 android:textSize="14sp"
-                tools:text="10 mins" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:fontFamily="@font/montserrat_bold"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
-                android:textSize="14sp"
-                tools:text="·" />
+                tools:text="10 mins"
+                app:drawableStartCompat="@drawable/ic_timer_18" />
 
             <TextView
                 android:id="@+id/txt_servings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_group_18"
                 android:fontFamily="@font/montserrat_regular"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
                 android:textSize="14sp"
-                tools:text="7" />
+                tools:text="7"
+                app:drawableStartCompat="@drawable/ic_group_18" />
 
         </LinearLayout>
 

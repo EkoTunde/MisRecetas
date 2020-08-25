@@ -17,50 +17,42 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:contentScrim="@color/colorPrimary"
-            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-            app:title="@string/app_name">
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
             <ImageView
+                android:id="@+id/header_image"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:contentDescription="@string/app_name"
-                android:scaleType="centerCrop"
-                app:srcCompat="@mipmap/chef_hat" />
-
-            <androidx.appcompat.widget.AppCompatRatingBar
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_marginStart="8dp"
-                android:max="5"
-                android:numStars="5"
-                android:stepSize="0.1" />
+                android:scaleType="centerCrop" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
-                app:title="Hello" />
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_edit_recipe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
-        android:src="@drawable/ic_favorite_border"
+        android:src="@drawable/ic_outline_edit_24"
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom|right|end" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:padding="16dp"
         android:id="@+id/recipe_content_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/item_detail_main_content"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:itemCount="1"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        tools:listitem="@layout/item_detail_main_content" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

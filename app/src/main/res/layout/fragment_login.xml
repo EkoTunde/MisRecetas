@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:fontFamily="@font/montserrat_regular"
-                android:text="@string/non_user_data_recopilation_msg"
+                android:text="@string/non_user_data_compilation_msg"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/continue_btn"

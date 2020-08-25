@@ -6,47 +6,23 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/layout_author"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        tools:text="Un guiso originado a principos del siglo XX en una Buenos Aires en construcción. Ideal para familias numerosas.">
-
-        <TextView
-            android:id="@+id/author_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_bold"
-            android:text="@string/author_title" />
-
-        <TextView
-            android:id="@+id/txt_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_medium"
-            android:textColor="@color/colorAccent"
-            tools:text="Juan Cruz Maciel Henning" />
-
-    </LinearLayout>
-
     <TextView
         android:id="@+id/txt_time_required"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_timer_18"
         android:drawablePadding="4dp"
         android:textAlignment="center"
-        tools:text="30'" />
+        tools:text="30'"
+        app:drawableStartCompat="@drawable/ic_timer_18" />
 
     <TextView
         android:id="@+id/txt_servings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_group_18"
         android:drawablePadding="4dp"
         android:textAlignment="center"
-        tools:text="5 personas" />
+        tools:text="5 personas"
+        app:drawableStartCompat="@drawable/ic_group_18" />
 
     <LinearLayout
         android:id="@+id/layout_description"
@@ -61,8 +37,8 @@
             android:layout_height="20dp"
             android:layout_weight="1"
             android:contentDescription="@string/app_name"
-            android:tint="@android:color/darker_gray"
-            app:srcCompat="@drawable/ic_quote_24" />
+            app:srcCompat="@drawable/ic_quote_24"
+            app:tint="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/txt_description"
@@ -70,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="19"
             android:fontFamily="@font/montserrat_regular"
-            tools:text="Un guiso originado en principos del siglo XX en una Buenos Aires en construcción. Ideal para familias numerosas." />
+            tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum" />
 
     </LinearLayout>
 

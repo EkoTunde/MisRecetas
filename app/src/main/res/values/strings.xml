@@ -21,7 +21,7 @@
     <string name="sign_in_message">Tenés que iniciar sesión o crear una cuenta para continuar.</string>
     <string name="exit_app">Salir</string>
     <string name="continue_login">Continuar</string>
-    <string name="non_user_data_recopilation_msg" tools:ignore="Typos">Mis Recetas no te solicitará ningún tipo información personal en ningún momento.</string>
+    <string name="non_user_data_compilation_msg" tools:ignore="Typos">Mis Recetas no te solicitará ningún tipo información personal en ningún momento.</string>
     <string name="anonymous">Anónimo</string>
     <string name="hard">Dificil</string>
     <string name="easy">Fácil</string>

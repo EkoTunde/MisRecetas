@@ -32,8 +32,8 @@ class MainContentAdapter(private val context: Context, private val recipe: Recip
         override fun bind(item: Recipe, position: Int) {
 
             // Set creator txt
-            itemView.txt_author.text =
-                recipe.creator?.displayName ?: context.getString(R.string.anonymous)
+            /*itemView.txt_author.text =
+                recipe.creator?.displayName ?: context.getString(R.string.anonymous)*/
 
             // Set timeRequired txt
             recipe.timeRequired.let { time ->

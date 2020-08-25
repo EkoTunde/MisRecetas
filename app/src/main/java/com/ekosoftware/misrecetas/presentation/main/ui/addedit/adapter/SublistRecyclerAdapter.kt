@@ -1,4 +1,4 @@
-package com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapters
+package com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter
 
 import android.content.Context
 import android.view.*

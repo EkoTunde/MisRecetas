@@ -1,37 +1,50 @@
 package com.ekosoftware.misrecetas.presentation.main
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.data.network.RecipesDataSource
 import com.ekosoftware.misrecetas.databinding.ActivityMainBinding
-import com.ekosoftware.misrecetas.domain.network.RecipeRepoImpl
+import com.ekosoftware.misrecetas.presentation.main.ui.home.HomeFragmentDirections
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.*
 import com.ekosoftware.misrecetas.util.FirebaseError
 import com.ekosoftware.misrecetas.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
 
-    private val viewModel: MainViewModel by viewModels {
-        MainVMFactory(
-            application,
-            RecipeRepoImpl(RecipesDataSource())
-        )
-    }
+    private val viewModel: MainViewModel by viewModels()
+
+    private val userViewModel by viewModels<UserViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        userViewModel.setUser()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         navController = findNavController(R.id.nav_host_fragment)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if(destination.id == R.id.homeFragment) {
+                binding.btnAddRecipe.visibility = View.VISIBLE
+            } else {
+                binding.btnAddRecipe.visibility = View.GONE
+            }
+        }
+        binding.btnAddRecipe.setOnClickListener { addRecipe() }
         subscribeObservers()
+    }
+
+    private fun addRecipe() {
+        val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment()
+        navController.navigate(action)
     }
 
     override fun onSupportNavigateUp(): Boolean {

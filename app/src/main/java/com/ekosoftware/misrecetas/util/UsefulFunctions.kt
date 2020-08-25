@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import com.ekosoftware.misrecetas.domain.model.Recipe
 
 fun IntArray.contains(integer: Int) : Boolean{
     this.forEach {
@@ -32,4 +33,15 @@ fun View.hide() {
 
 fun View.show() {
     visibility = View.VISIBLE
+}
+
+fun Recipe.isNotEqual(recipe: Recipe) : Boolean {
+    return this.name != recipe.name
+            || this.description != recipe.description
+            || this.timeRequired != recipe.timeRequired
+            || this.servings != recipe.servings
+            || this.imageUrl != recipe.imageUrl
+            || this.imageUUID != recipe.imageUUID
+            || this.ingredients != recipe.ingredients
+            || this.instructions != recipe.instructions
 }

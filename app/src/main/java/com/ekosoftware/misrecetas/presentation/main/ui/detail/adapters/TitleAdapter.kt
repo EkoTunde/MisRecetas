@@ -24,7 +24,7 @@ class TitleAdapter(private val context: Context, private val title: String) : Re
         }
     }
 
-    inner class TitleViewHolder(itemView: View) : BaseViewHolder<String>(itemView) {
+    class TitleViewHolder(itemView: View) : BaseViewHolder<String>(itemView) {
         override fun bind(item: String, position: Int) {
             itemView.txt_ingredients_title.text = item
         }

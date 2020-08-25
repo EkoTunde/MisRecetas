@@ -16,7 +16,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/login_navigation" />
+        app:navGraph="@navigation/login_navigation"
+        tools:ignore="FragmentTagUsage" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

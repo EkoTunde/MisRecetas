@@ -1,7 +1,9 @@
 package com.ekosoftware.misrecetas.presentation.main.ui.viewmodel
 
-import android.app.Application
+import android.content.Context
 import android.net.Uri
+import android.util.Log
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -14,21 +16,25 @@ import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.domain.network.RecipeRepo
 import com.ekosoftware.misrecetas.util.FirebaseError
 import com.ekosoftware.misrecetas.vo.Resource
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 
-class MainViewModel(
-    application: Application,
+class MainViewModel @ViewModelInject constructor(
+    @ApplicationContext appContext: Context,
     private val recipeRepo: RecipeRepo
 ) : ViewModel() {
+
+    private val tag = "MainViewModel"
 
     var fetchRecipes = liveData(IO) {
         emit(Resource.Loading())
         try {
             recipeRepo.getUserRecipes().collect { result ->
                 emit(result)
+                Log.d(tag, "Result: $result ")
             }
         } catch (e: Exception) {
             emit(Resource.Failure(e))
@@ -46,7 +52,7 @@ class MainViewModel(
         try {
             val recipeName = when (event) {
                 Event.ADD -> recipeRepo.addRecipe(recipe)
-                Event.UPDATE -> recipeRepo.addRecipe(recipe)
+                Event.UPDATE -> recipeRepo.updateRecipe(recipe)
                 Event.DELETE -> recipeRepo.deleteRecipe(recipe)
             }
             if (recipeName.isNotEmpty()) publishEventResult(EventResult(event, Result.SUCCESS, recipe))
@@ -71,14 +77,7 @@ class MainViewModel(
         selectedRecipe.value = recipe
     }
 
-    val sharedRecipe = selectedRecipe.distinctUntilChanged().switchMap {
-        liveData {
-            //delay(1000)
-            emit(it)
-        }
-    }
-
-    private val workManager = WorkManager.getInstance(application)
+    private val workManager = WorkManager.getInstance(appContext)
 
     private val uploadImageRequest = MutableLiveData<OneTimeWorkRequest>()
 
@@ -116,62 +115,9 @@ enum class Result {
     LOADING, SUCCESS, FAILURE
 }
 
-data class EventResult(val event: Event, val result: Result, val recipe: Recipe, var failureMsg: FirebaseError = FirebaseError.NONE)
-
-/* fun addRecipe(recipe: Recipe) = liveData(IO) {
-        try {
-            val result = recipeRepo.addRecipe(recipe)
-            publishEventResult()
-            emit(result)
-        } catch (e: Exception) {
-            emit(Resource.Failure(e))
-        }
-    }
-
-    fun updateRecipe(recipe: Recipe) = liveData(IO) {
-        emit(Resource.Loading())
-        try {
-            val result = recipeRepo.updateRecipe(recipe)
-            emit(result)
-        } catch (e: Exception) {
-            emit(Resource.Failure(e))
-        }
-    }
-
-    fun deleteRecipe(recipe: Recipe) = liveData(IO) {
-        emit(Resource.Loading())
-        try {
-            val result = recipeRepo.deleteRecipe(recipe)
-            emit(result)
-        } catch (e: Exception) {
-            emit(Resource.Failure(e))
-        }
-    }
-
-    val eventResultBroadcaster = eventResultReceiver.distinctUntilChanged().switchMap { eventResult ->
-        liveData {
-            emit(eventResult)
-        }
-    }
-
-    private val recipeEvent = MutableLiveData<RecipeEvent>()
-
-    fun registerEvent(RecipeEvent: RecipeEvent) {
-        recipeEvent.value = RecipeEvent
-    }
-
-    val fetchEvents = recipeEvent.distinctUntilChanged().switchMap { recipeEvent ->
-        liveData(IO) {
-            emit(Resource.Loading())
-            try {
-                val result = when (recipeEvent.event) {
-                    Event.ADD -> recipeRepo.addRecipe(recipeEvent.recipe)
-                    Event.UPDATE -> recipeRepo.addRecipe(recipeEvent.recipe)
-                    Event.DELETE -> recipeRepo.deleteRecipe(recipeEvent.recipe)
-                }
-                emit(result)
-            } catch (e: Exception) {
-                emit(Resource.Failure(e))
-            }
-        }
-    }*/
+data class EventResult(
+    val event: Event,
+    val result: Result,
+    val recipe: Recipe,
+    var failureMsg: FirebaseError = FirebaseError.NONE
+)

@@ -12,30 +12,13 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.data.network.RecipesDataSource
 import com.ekosoftware.misrecetas.databinding.FragmentHomeBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
-import com.ekosoftware.misrecetas.domain.network.RecipeRepoImpl
-import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainVMFactory
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.vo.Resource
 import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
-
-    private lateinit var recipesRecyclerAdapter: RecipesRecyclerAdapter
-
-    fun showProgress() {
-        if (progressBar != null) {
-            progressBar.visibility = View.VISIBLE
-        }
-    }
-
-    fun hideProgress() {
-        if (progressBar != null) {
-            progressBar.visibility = View.GONE
-        }
-    }
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -43,10 +26,9 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var recipesRecyclerAdapter: RecipesRecyclerAdapter
 
-    private val viewModel by activityViewModels<MainViewModel> {
-        MainVMFactory(requireActivity().application, RecipeRepoImpl(RecipesDataSource()))
-    }
+    private val viewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,11 +44,6 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
         setUpRecyclerView()
-        
-        btn_add_recipe.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment()
-            findNavController().navigate(action)
-        }
 
         fetchData()
     }
@@ -74,22 +51,19 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
     private fun setUpNavigation() {
         val navController = findNavController()
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-
-        toolbar_add_edit.setupWithNavController(navController, appBarConfiguration)
+        binding.toolbarAddEdit.setupWithNavController(navController, appBarConfiguration)
     }
 
-    private fun setUpRecyclerView() {
-        rv_recipes.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(
-                DividerItemDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL
-                )
+    private fun setUpRecyclerView() = recycler_view_recipes_list.apply {
+        layoutManager = LinearLayoutManager(requireContext())
+        addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL
             )
-            recipesRecyclerAdapter = RecipesRecyclerAdapter(this@HomeFragment)
-            adapter = recipesRecyclerAdapter
-        }
+        )
+        recipesRecyclerAdapter = RecipesRecyclerAdapter(this@HomeFragment)
+        adapter = recipesRecyclerAdapter
     }
 
     private fun fetchData() {
@@ -99,8 +73,8 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
                     showProgress()
                 }
                 is Resource.Success -> {
-                    recipesRecyclerAdapter.submitList(result.data)
                     hideProgress()
+                    recipesRecyclerAdapter.submitList(result.data)
                 }
                 is Resource.Failure -> {
                     hideProgress()
@@ -114,6 +88,18 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
             HomeFragmentDirections.actionHomeFragmentToRecipeDetailFragment(item, item.name!!)
         //viewModel.selectRecipe(item)
         findNavController().navigate(action)
+    }
+
+    private fun showProgress() {
+        if (progressBar != null) {
+            progressBar.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideProgress() {
+        if (progressBar != null) {
+            progressBar.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {

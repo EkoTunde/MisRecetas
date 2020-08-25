@@ -5,8 +5,9 @@ import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.vo.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class RecipeRepoImpl(private val recipesDataSource: RecipesDataSource) : RecipeRepo {
+class RecipeRepoImpl @Inject constructor(private val recipesDataSource: RecipesDataSource) : RecipeRepo {
 
     @ExperimentalCoroutinesApi
     override suspend fun getUserRecipes(): Flow<Resource<List<Recipe>>> = recipesDataSource.getAllRecipes()

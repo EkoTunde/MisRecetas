@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -20,31 +21,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkInfo
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.data.network.RecipesDataSource
-import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.KEY_IMAGE_URI
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.KEY_OUTPUT_DOWNLOAD_IMAGE_URI
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.Progress
 import com.ekosoftware.misrecetas.databinding.FragmentAddEditRecipeBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
-import com.ekosoftware.misrecetas.domain.network.RecipeRepoImpl
-import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapters.SublistInteraction
-import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapters.SublistRecyclerAdapter
-import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapters.Type
+import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.SublistInteraction
+import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.SublistRecyclerAdapter
+import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.Type
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.Event
-import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainVMFactory
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.util.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.theartofdev.edmodo.cropper.CropImage
+import kotlinx.coroutines.launch
 import java.util.*
 
 class AddEditRecipeFragment : Fragment() {
-
-    companion object {
-        const val SAVE = 0
-        const val UPDATE = 1
-    }
 
     private var _binding: FragmentAddEditRecipeBinding? = null
     private val binding get() = _binding!!
@@ -58,12 +51,7 @@ class AddEditRecipeFragment : Fragment() {
     private var imageHolder: Uri? = null
     private var imageUUID: String? = null
 
-    private val mainViewModel: MainViewModel by activityViewModels {
-        MainVMFactory(
-            requireActivity().application,
-            RecipeRepoImpl(RecipesDataSource())
-        )
-    }
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +73,7 @@ class AddEditRecipeFragment : Fragment() {
         initInstructionsRecyclerView()
         initButtons()
 
-        subscribeObservers()
+        subscribeSelectedRecipeObserver()
     }
 
     // Adding/Editing fragments implement a different toolbar
@@ -107,10 +95,12 @@ class AddEditRecipeFragment : Fragment() {
 
     private fun save(recipe: Recipe) {
         hideKeyboard()
-        if (receivedRecipe != null) {
-            mainViewModel.startNetworkOperation(Event.UPDATE, recipe)
+        if (receivedRecipe != null) { // When Fragment was created to edit a Recipe
+            if (recipe.isNotEqual(receivedRecipe!!)) mainViewModel.startNetworkOperation(Event.UPDATE, recipe)
+            mainViewModel.selectRecipe(recipe)
         } else {
             mainViewModel.startNetworkOperation(Event.ADD, recipe)
+            mainViewModel.selectRecipe(null)
         }
         findNavController().navigateUp()
     }
@@ -122,10 +112,12 @@ class AddEditRecipeFragment : Fragment() {
         servings = binding.txtServings.text.toString().toLong(),
         isFavorite = false,
         id = receivedRecipe?.id,
-        imageUrl = receivedRecipe?.imageUrl,
+        imageUrl = imageHolder?.toString() ?: receivedRecipe?.imageUrl,
         imageUUID = receivedRecipe?.imageUUID ?: imageUUID,
         ingredients = ingredientsList,
-        instructions = instructionsList
+        instructions = instructionsList,
+        creator = receivedRecipe?.creator,
+        creationDate = receivedRecipe?.creationDate
     )
 
     private fun initButtons() = binding.run {
@@ -136,9 +128,6 @@ class AddEditRecipeFragment : Fragment() {
             addEmptyItems(instructionsList, instructionsAdapter, instructionsList.size)
         }
         listOf(noImageAddedText, buttonEditImage, recipeImage).forEach { it.setOnClickListener { showImageOptionsDialog() } }
-        /*noImageAddedText.setOnClickListener { showImageOptionsDialog() }
-        buttonEditImage.setOnClickListener { showImageOptionsDialog() }
-        recipeImage.setOnClickListener { showImageOptionsDialog() }*/
     }
 
     private fun addEmptyItems(list: MutableList<String>, adapter: SublistRecyclerAdapter, vararg indexes: Int) {
@@ -188,6 +177,7 @@ class AddEditRecipeFragment : Fragment() {
                 val resultUri = result.uri
                 GlideApp.with(this).load(resultUri).centerCrop().into(binding.recipeImage)
                 imageUUID = receivedRecipe?.imageUUID ?: UUID.randomUUID().toString()
+                subscribeUploadImageWorkObserver()
                 mainViewModel.uploadImage(resultUri, imageUUID!!)
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Snackbar.make(binding.parentLayout, R.string.error_getting_image, Snackbar.LENGTH_LONG)
@@ -197,31 +187,40 @@ class AddEditRecipeFragment : Fragment() {
         }
     }
 
-    private fun subscribeObservers() {
+    private fun subscribeSelectedRecipeObserver() =
         mainViewModel.selectedRecipe.observe(viewLifecycleOwner, selectedRecipeObserver())
-        mainViewModel.uploadImageWork.observe(viewLifecycleOwner, uploadImageObserver())
-    }
 
     private fun selectedRecipeObserver(): Observer<Recipe?> {
         return Observer {
             receivedRecipe = it
-            setInfo(it)
             setIngredients(it?.ingredients)
             setInstructions(it?.instructions)
+            setInfo(it)
             binding.recipeImage.setImage(it?.imageUrl)
+            binding.recipeImage.requestFocus()
+            binding.txtName.requestFocus()
+            lifecycleScope.launch {
+                binding.recipeImage.requestFocus()
+                binding.txtName.requestFocus()
+            }
         }
     }
+
+    private fun subscribeUploadImageWorkObserver() =
+        mainViewModel.uploadImageWork.observe(viewLifecycleOwner, uploadImageObserver())
 
     private fun uploadImageObserver(): Observer<WorkInfo> {
         return Observer { workInfo ->
             if (workInfo != null && workInfo.state.isFinished) {
                 hideImageProcessing()
                 workInfo.outputData.run {
-                    getString(KEY_IMAGE_URI)?.let { originalUri ->
+                    /*getString(KEY_IMAGE_URI)?.let { originalUri ->
                         imageHolder = Uri.parse(originalUri)
-                    }
+                    }*/
                     getString(KEY_OUTPUT_DOWNLOAD_IMAGE_URI)?.let { downloadUrl ->
-                        receivedRecipe?.imageUrl = downloadUrl
+                        //receivedRecipe?.imageUrl = downloadUrl
+                        imageHolder = Uri.parse(downloadUrl)
+                        Snackbar.make(binding.root, imageHolder.toString(), Snackbar.LENGTH_LONG).show()
                     }
                     binding.buttonEditImage.visibility = View.VISIBLE
                 }
@@ -317,7 +316,12 @@ class AddEditRecipeFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    private fun SublistRecyclerAdapter.addLine(sublist: MutableList<String>, position: Int, fromItemCurrentCursorIndex: Int, recyclerView: RecyclerView) {
+    private fun SublistRecyclerAdapter.addLine(
+        sublist: MutableList<String>,
+        position: Int,
+        fromItemCurrentCursorIndex: Int,
+        recyclerView: RecyclerView
+    ) {
         // Allows only new item to gain focus when list is updated
         setFocusableItems(position + 1)
 
@@ -355,8 +359,8 @@ class AddEditRecipeFragment : Fragment() {
     }
 
     private fun Recipe.publishName() = this.name?.let {
-        binding.txtDescription.setText(it)
-        binding.txtDescriptionLayout.isEndIconVisible = false
+        binding.txtName.setText(it)
+        binding.txtNameLayout.isEndIconVisible = false
     }
 
     private fun Recipe.publishDescription() = this.description?.let {
@@ -384,12 +388,6 @@ class AddEditRecipeFragment : Fragment() {
             ingredientsAdapter.notifyDataSetChanged()
             return
         }
-        /*if (ingredients.isNullOrEmpty()) addEmptyItems(ingredientsList, ingredientsAdapter, 0, 1)
-        else {
-            ingredientsList.addAll(ingredients)
-            ingredientsAdapter.submitList(ingredientsList)
-            ingredientsAdapter.notifyDataSetChanged()
-        }*/
     }
 
     private fun setInstructions(instructions: List<String>?) {
@@ -400,12 +398,6 @@ class AddEditRecipeFragment : Fragment() {
             instructionsAdapter.notifyDataSetChanged()
             return
         }
-        /*if (instructions.isNullOrEmpty()) addEmptyItems(instructionsList, instructionsAdapter, 0, 1)
-        else {
-            instructionsList.addAll(instructions)
-            instructionsAdapter.submitList(instructionsList)
-            instructionsAdapter.notifyDataSetChanged()
-        }*/
     }
 
     private fun areFieldsComplete(): Boolean {

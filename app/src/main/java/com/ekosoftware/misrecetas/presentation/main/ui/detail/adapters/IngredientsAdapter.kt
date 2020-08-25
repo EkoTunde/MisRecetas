@@ -27,7 +27,7 @@ class IngredientsAdapter(private val context: Context, private val ingredients: 
         }
     }
 
-    inner class IngredientsViewHolder(itemView: View) : BaseViewHolder<String>(itemView) {
+    class IngredientsViewHolder(itemView: View) : BaseViewHolder<String>(itemView) {
         override fun bind(item: String, position: Int) {
             itemView.txt_ingredient.text = item
         }

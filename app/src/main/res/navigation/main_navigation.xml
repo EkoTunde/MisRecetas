@@ -29,8 +29,8 @@
     <fragment
         android:id="@+id/recipeDetailFragment"
         android:name="com.ekosoftware.misrecetas.presentation.main.ui.detail.RecipeDetailFragment"
-        android:label="Hello"
-        tools:layout="@layout/fragment_recipe_detail">
+        tools:layout="@layout/fragment_recipe_detail"
+        android:label="{name}">
         <argument
             android:name="recipe"
             app:argType="com.ekosoftware.misrecetas.domain.model.Recipe" />
@@ -48,5 +48,6 @@
     <fragment
         android:id="@+id/addEditRecipeFragment"
         android:name="com.ekosoftware.misrecetas.presentation.main.ui.addedit.AddEditRecipeFragment"
-        android:label="AddEditRecipeFragment" />
+        android:label="AddEditRecipeFragment"
+        tools:layout="@layout/fragment_add_edit_recipe"/>
 </navigation>
