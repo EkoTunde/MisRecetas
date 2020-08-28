@@ -55,8 +55,10 @@ class MainViewModel @ViewModelInject constructor(
                 Event.UPDATE -> recipeRepo.updateRecipe(recipe)
                 Event.DELETE -> recipeRepo.deleteRecipe(recipe)
             }
-            if (recipeName.isNotEmpty()) publishEventResult(EventResult(event, Result.SUCCESS, recipe))
-            else throw IllegalArgumentException("Recipe name can't be null")
+            if (recipeName.isNotEmpty()) {
+                //showRecipeDetails(recipe)
+                publishEventResult(EventResult(event, Result.SUCCESS, recipe))
+            } else throw IllegalArgumentException("Recipe name can't be null")
         } catch (e: Exception) {
             val failureMsg = if (e.message != null && e.message!!.contains("Missing or insufficient permissions")) {
                 FirebaseError.ERROR_MISSING_PERMISSIONS
@@ -65,10 +67,10 @@ class MainViewModel @ViewModelInject constructor(
         }
     }
 
-    private var newImageUriHolder: Uri? = null
+    val detailRecipe = MutableLiveData<Recipe>()
 
-    fun setNewImageUri(imageUri: Uri?) {
-        newImageUriHolder = imageUri
+    fun showRecipeDetails(recipe: Recipe) {
+        detailRecipe.value = recipe
     }
 
     val selectedRecipe = MutableLiveData<Recipe?>()
@@ -105,6 +107,8 @@ class MainViewModel @ViewModelInject constructor(
         builder.putString(KEY_IMAGE_NAME, name)
         return builder.build()
     }
+
+    fun deleteImage(recipeId: String?, uuid: String) = viewModelScope.launch { recipeRepo.deleteImage(recipeId, uuid) }
 }
 
 enum class Event {

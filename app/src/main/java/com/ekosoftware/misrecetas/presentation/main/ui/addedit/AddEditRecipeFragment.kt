@@ -3,6 +3,7 @@ package com.ekosoftware.misrecetas.presentation.main.ui.addedit
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -34,7 +34,6 @@ import com.ekosoftware.misrecetas.util.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.theartofdev.edmodo.cropper.CropImage
-import kotlinx.coroutines.launch
 import java.util.*
 
 class AddEditRecipeFragment : Fragment() {
@@ -56,6 +55,9 @@ class AddEditRecipeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        arguments?.let {
+            receivedRecipe = it.getParcelable("recipe")
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -73,13 +75,15 @@ class AddEditRecipeFragment : Fragment() {
         initInstructionsRecyclerView()
         initButtons()
 
-        subscribeSelectedRecipeObserver()
+        populateUI()
+        //subscribeSelectedRecipeObserver()
     }
 
     // Adding/Editing fragments implement a different toolbar
     private fun initToolbar() {
         val appBarConfiguration = AppBarConfiguration(findNavController().graph)
         binding.toolbarAddEdit.setupWithNavController(findNavController(), appBarConfiguration)
+        binding.toolbarAddEdit.title = requireContext().getString(R.string.add_recipe)
 
         // Handle menu item clicks - works different than in an Activity
         binding.toolbarAddEdit.setOnMenuItemClickListener {
@@ -96,11 +100,13 @@ class AddEditRecipeFragment : Fragment() {
     private fun save(recipe: Recipe) {
         hideKeyboard()
         if (receivedRecipe != null) { // When Fragment was created to edit a Recipe
-            if (recipe.isNotEqual(receivedRecipe!!)) mainViewModel.startNetworkOperation(Event.UPDATE, recipe)
-            mainViewModel.selectRecipe(recipe)
+            if (recipe != receivedRecipe) {
+                mainViewModel.showRecipeDetails(recipe) // Will update details fragment
+                mainViewModel.startNetworkOperation(Event.UPDATE, recipe)
+            }
         } else {
-            mainViewModel.startNetworkOperation(Event.ADD, recipe)
             mainViewModel.selectRecipe(null)
+            mainViewModel.startNetworkOperation(Event.ADD, recipe)
         }
         findNavController().navigateUp()
     }
@@ -130,6 +136,15 @@ class AddEditRecipeFragment : Fragment() {
         listOf(noImageAddedText, buttonEditImage, recipeImage).forEach { it.setOnClickListener { showImageOptionsDialog() } }
     }
 
+    private fun populateUI() = receivedRecipe.let {
+        setIngredients(it?.ingredients)
+        setInstructions(it?.instructions)
+        setInfo(it)
+        binding.recipeImage.setImage(it?.imageUrl)
+        binding.recipeImage.requestFocus()
+        binding.txtName.requestFocus()
+    }
+
     private fun addEmptyItems(list: MutableList<String>, adapter: SublistRecyclerAdapter, vararg indexes: Int) {
         indexes.forEach { index ->
             list.add(index, "")
@@ -137,15 +152,19 @@ class AddEditRecipeFragment : Fragment() {
         }
         adapter.apply {
             submitList(list)
-            notifyItemRangeInserted(indexes[0], indexes.size)
+            notifyDataSetChanged()
+            //notifyItemRangeInserted(indexes[0], indexes.size)
         }
+        binding.recipeImage.requestFocus()
+        binding.txtName.setText("")
+        binding.txtName.requestFocus()
     }
 
-    private fun clearList(list: MutableList<String>, adapter: SublistRecyclerAdapter) {
+    /*private fun clearList(list: MutableList<String>, adapter: SublistRecyclerAdapter) {
         list.clear()
         adapter.submitList(list)
         adapter.notifyDataSetChanged()
-    }
+    }*/
 
     private fun showImageOptionsDialog() =
         ImageOptionsBottomSheetDialog(bottomSheetListener).show(requireActivity().supportFragmentManager, "imageOptionsDialog")
@@ -156,11 +175,13 @@ class AddEditRecipeFragment : Fragment() {
             else { // Delete image
                 GlideApp.with(this@AddEditRecipeFragment)
                     .load(ContextCompat.getDrawable(requireContext(), R.drawable.non_image_placeholder)).into(binding.recipeImage)
+                imageUUID ?: receivedRecipe?.imageUUID?.let {
+                    mainViewModel.deleteImage(receivedRecipe?.id, it)
+                }
                 binding.recipeImage.setImageDrawable(null)
                 binding.buttonEditImage.hide()
                 binding.noImageAddedText.show()
                 imageHolder = null
-                mainViewModel.setNewImageUri(null)
             }
         }
     }
@@ -190,20 +211,19 @@ class AddEditRecipeFragment : Fragment() {
     private fun subscribeSelectedRecipeObserver() =
         mainViewModel.selectedRecipe.observe(viewLifecycleOwner, selectedRecipeObserver())
 
-    private fun selectedRecipeObserver(): Observer<Recipe?> {
-        return Observer {
-            receivedRecipe = it
-            setIngredients(it?.ingredients)
-            setInstructions(it?.instructions)
-            setInfo(it)
-            binding.recipeImage.setImage(it?.imageUrl)
+    private fun selectedRecipeObserver(): Observer<Recipe?> = Observer {
+        if (it != null) binding.toolbarAddEdit.title = requireContext().getString(R.string.edit_recipe)
+        receivedRecipe = it
+        setIngredients(it?.ingredients)
+        setInstructions(it?.instructions)
+        setInfo(it)
+        binding.recipeImage.setImage(it?.imageUrl)
+        binding.recipeImage.requestFocus()
+        binding.txtName.requestFocus()
+        /*lifecycleScope.launch {
             binding.recipeImage.requestFocus()
             binding.txtName.requestFocus()
-            lifecycleScope.launch {
-                binding.recipeImage.requestFocus()
-                binding.txtName.requestFocus()
-            }
-        }
+        }*/
     }
 
     private fun subscribeUploadImageWorkObserver() =
@@ -220,7 +240,6 @@ class AddEditRecipeFragment : Fragment() {
                     getString(KEY_OUTPUT_DOWNLOAD_IMAGE_URI)?.let { downloadUrl ->
                         //receivedRecipe?.imageUrl = downloadUrl
                         imageHolder = Uri.parse(downloadUrl)
-                        Snackbar.make(binding.root, imageHolder.toString(), Snackbar.LENGTH_LONG).show()
                     }
                     binding.buttonEditImage.visibility = View.VISIBLE
                 }
@@ -258,15 +277,13 @@ class AddEditRecipeFragment : Fragment() {
         ingredientsAdapter = SublistRecyclerAdapter(requireContext(), Type.INGREDIENTS, ingredientsInteraction)
         binding.ingredientsRecycler.adapter = ingredientsAdapter
         setAdapter(binding.ingredientsRecycler, ingredientsAdapter)
-        addEmptyItems(ingredientsList, ingredientsAdapter, 0, 1)
     }
 
     private val ingredientsInteraction by lazy {
         object : SublistInteraction {
 
-            override fun addLine(position: Int, fromItemCurrentCursorIndex: Int) = ingredientsAdapter.addLine(
-                ingredientsList, position, fromItemCurrentCursorIndex, binding.ingredientsRecycler
-            )
+            override fun addLine(position: Int, fromItemCurrentCursorIndex: Int) =
+                ingredientsAdapter.addLine(ingredientsList, position, fromItemCurrentCursorIndex, binding.ingredientsRecycler)
 
             override fun onDelete(position: Int) = ingredientsAdapter.deleteItem(ingredientsList, position)
 
@@ -286,7 +303,6 @@ class AddEditRecipeFragment : Fragment() {
         instructionsAdapter = SublistRecyclerAdapter(requireContext(), Type.INSTRUCTIONS, instructionsInteraction)
         binding.instructionsRecycler.adapter = instructionsAdapter
         setAdapter(binding.instructionsRecycler, instructionsAdapter)
-        addEmptyItems(instructionsList, instructionsAdapter, 0, 1)
     }
 
     private val instructionsInteraction by lazy {
@@ -317,9 +333,7 @@ class AddEditRecipeFragment : Fragment() {
     }
 
     private fun SublistRecyclerAdapter.addLine(
-        sublist: MutableList<String>,
-        position: Int,
-        fromItemCurrentCursorIndex: Int,
+        sublist: MutableList<String>, position: Int, fromItemCurrentCursorIndex: Int,
         recyclerView: RecyclerView
     ) {
         // Allows only new item to gain focus when list is updated
@@ -382,22 +396,25 @@ class AddEditRecipeFragment : Fragment() {
 
     private fun setIngredients(ingredients: List<String>?) {
         ingredients?.let {
-            clearList(ingredientsList, ingredientsAdapter)
+            //clearList(ingredientsList, ingredientsAdapter)
             ingredientsList.addAll(it)
             ingredientsAdapter.submitList(ingredientsList)
             ingredientsAdapter.notifyDataSetChanged()
             return
         }
+        addEmptyItems(ingredientsList, ingredientsAdapter, 0, 1)
     }
 
     private fun setInstructions(instructions: List<String>?) {
         instructions?.let {
-            clearList(instructionsList, instructionsAdapter)
+            //clearList(instructionsList, instructionsAdapter)
+            Log.d(TAG, "setInstructions: ADDING")
             instructionsList.addAll(it)
             instructionsAdapter.submitList(instructionsList)
             instructionsAdapter.notifyDataSetChanged()
             return
         }
+        addEmptyItems(instructionsList, instructionsAdapter, 0, 1)
     }
 
     private fun areFieldsComplete(): Boolean {
@@ -415,7 +432,7 @@ class AddEditRecipeFragment : Fragment() {
         }
         return when {
             // If no ingredients have been added, show error Snackbar
-            ingredientsList.isNullOrEmpty() -> errorMessage(Type.INSTRUCTIONS).publishSnackbar()
+            ingredientsList.isNullOrEmpty() -> errorMessage(Type.INGREDIENTS).publishSnackbar()
             // If no instructions have been added, show error Snackbar
             instructionsList.isNullOrEmpty() -> errorMessage(Type.INSTRUCTIONS).publishSnackbar()
             else -> true
@@ -433,10 +450,12 @@ class AddEditRecipeFragment : Fragment() {
         return false
     }
 
+    private val TAG = "AddEditRecipeFragment"
     override fun onDestroyView() {
         super.onDestroyView()
         hideKeyboard()
-        ingredientsList.clear()
-        instructionsList.clear()
+        Log.d(TAG, "onDestroyView: $ingredientsList")
+        //ingredientsList.clear()
+        //instructionsList.clear()
     }
 }

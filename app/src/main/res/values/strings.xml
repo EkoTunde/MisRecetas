@@ -53,7 +53,7 @@
     <string name="recipe">Receta</string>
     <string name="add_recipe">Nueva receta</string>
     <string name="edit_recipe">Editar receta</string>
-    <string name="ingredient_suggestion">250 ml de agua</string>
+    <string name="ingredient_suggestion">Por ej.: 250 ml de agua</string>
     <string name="add_recipe_photo_image">Hacé click para agregar una imagen que caracterice esta receta</string>
     <string name="add_ingredient">Ingrediente</string>
     <string name="add_instruction">Paso</string>

@@ -28,7 +28,7 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
     private val binding get() = _binding!!
     private lateinit var recipesRecyclerAdapter: RecipesRecyclerAdapter
 
-    private val viewModel by activityViewModels<MainViewModel>()
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,7 +67,7 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
     }
 
     private fun fetchData() {
-        viewModel.fetchRecipes.observe(requireActivity(), { result ->
+        mainViewModel.fetchRecipes.observe(requireActivity(), { result ->
             when (result) {
                 is Resource.Loading -> {
                     showProgress()
@@ -84,9 +84,8 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
     }
 
     override fun onRecipeSelected(item: Recipe) {
-        val action =
-            HomeFragmentDirections.actionHomeFragmentToRecipeDetailFragment(item, item.name!!)
-        //viewModel.selectRecipe(item)
+        mainViewModel.showRecipeDetails(item)
+        val action = HomeFragmentDirections.actionHomeFragmentToRecipeDetailFragment(item.name!!)
         findNavController().navigate(action)
     }
 

@@ -10,8 +10,15 @@ import com.ekosoftware.misrecetas.base.BaseViewHolder
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import kotlinx.android.synthetic.main.item_detail_main_content.view.*
 
-class MainContentAdapter(private val context: Context, private val recipe: Recipe) :
+class MainContentAdapter(private val context: Context) :
     RecyclerView.Adapter<BaseViewHolder<*>>() {
+
+    private var recipe: Recipe = Recipe()
+
+    fun submitRecipe(recipe: Recipe) {
+        this.recipe = recipe
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return MainContentViewHolder(
@@ -30,11 +37,6 @@ class MainContentAdapter(private val context: Context, private val recipe: Recip
 
     inner class MainContentViewHolder(itemView: View) : BaseViewHolder<Recipe>(itemView) {
         override fun bind(item: Recipe, position: Int) {
-
-            // Set creator txt
-            /*itemView.txt_author.text =
-                recipe.creator?.displayName ?: context.getString(R.string.anonymous)*/
-
             // Set timeRequired txt
             recipe.timeRequired.let { time ->
                 itemView.txt_time_required.let { view ->

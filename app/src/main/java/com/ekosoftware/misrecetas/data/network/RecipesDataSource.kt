@@ -1,10 +1,12 @@
 package com.ekosoftware.misrecetas.data.network
 
+import android.util.Log
 import com.ekosoftware.misrecetas.domain.model.CurrentUser
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.vo.Resource
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
@@ -17,6 +19,7 @@ class RecipesDataSource {
     companion object {
         private val db = FirebaseFirestore.getInstance()
         private val recipesRef = db.collection("recipes")
+        private val bucket = FirebaseStorage.getInstance().reference
     }
 
     @ExperimentalCoroutinesApi
@@ -97,5 +100,16 @@ class RecipesDataSource {
             return recipe.name!!
         }
         throw IllegalArgumentException("Recipe id was null when trying to delete")
+    }
+
+    private val TAG = "RecipesDataSource"
+    suspend fun deleteImage(recipeId: String?, uuid: String) {
+        Log.d(TAG, "deleteImage: deleting")
+        bucket.child("$uuid.jpg").delete().await()
+        recipeId?.let {
+            Log.d(TAG, "deleteImage: chau url")
+            recipesRef.document(it).update("imageUrl", "").await()
+            Log.d(TAG, "deleteImage: chau url success")
+        }
     }
 }

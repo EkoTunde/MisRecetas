@@ -20,4 +20,6 @@ class RecipeRepoImpl @Inject constructor(private val recipesDataSource: RecipesD
     override suspend fun updateRecipe(recipe: Recipe): String = recipesDataSource.updateRecipe(recipe)
 
     override suspend fun deleteRecipe(recipe: Recipe): String = recipesDataSource.deleteRecipe(recipe)
+
+    override suspend fun deleteImage(recipeId: String?, uuid: String) = recipesDataSource.deleteImage(recipeId, uuid)
 }

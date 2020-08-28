@@ -4,12 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.domain.model.Recipe
+import com.ekosoftware.misrecetas.util.GlideApp
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.item_recipe.view.*
 
@@ -49,7 +50,8 @@ class RecipesRecyclerAdapter(private val interaction: Interaction? = null) :
 
     override fun getItemCount(): Int = differ.currentList.size
 
-    inner class RecipesViewHolderViewHolder(itemView: View, private val interaction: Interaction?) : RecyclerView.ViewHolder(itemView) {
+    inner class RecipesViewHolderViewHolder(itemView: View, private val interaction: Interaction?) :
+        RecyclerView.ViewHolder(itemView) {
         fun bind(item: Recipe) {
             itemView.apply {
                 setOnClickListener {
@@ -65,15 +67,25 @@ class RecipesRecyclerAdapter(private val interaction: Interaction? = null) :
         }
 
         private fun ImageView.setImage(item: Recipe) {
-            item.imageUrl?.let {
-                /*GlideApp*/Glide.with(itemView.context).load(it).centerCrop().into(this)
+
+            // If url is available
+            item.imageUrl?.takeIf { it.isNotEmpty() }?.let {
+                GlideApp.with(itemView.context).load(it).centerCrop().into(this)
                 return
             }
-            item.imageUUID?.let {
+
+            // If not, check if FirebaseStorage has an image for this recipe
+            item.imageUUID?.takeIf { it.isNotEmpty() }?.let {
                 val image = FirebaseStorage.getInstance().reference.child("${item.imageUUID}.jpg")
-                /*GlideApp*/Glide.with(itemView.context).load(image).centerCrop().into(this)
+                GlideApp.with(itemView.context).load(image)
+                    .error(
+                        GlideApp.with(itemView.context).load(ContextCompat.getDrawable(itemView.context, R.drawable.chef_hat))
+                    )
+                    .centerCrop()
+                    .into(this)
                 return
             }
+            GlideApp.with(itemView.context).load(ContextCompat.getDrawable(itemView.context, R.drawable.chef_hat)).into(this)
         }
     }
 

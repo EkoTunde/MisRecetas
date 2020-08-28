@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addRecipe() {
-        val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment()
+        val action = HomeFragmentDirections.actionHomeFragmentToAddEditRecipeFragment(null)
         navController.navigate(action)
     }
 

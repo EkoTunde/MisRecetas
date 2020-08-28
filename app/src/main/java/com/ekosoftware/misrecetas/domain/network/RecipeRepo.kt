@@ -10,4 +10,5 @@ interface RecipeRepo {
     suspend fun addRecipe(recipe: Recipe) : String
     suspend fun updateRecipe(recipe: Recipe) : String
     suspend fun deleteRecipe(recipe: Recipe) : String
+    suspend fun deleteImage(recipeId: String?, uuid: String)
 }

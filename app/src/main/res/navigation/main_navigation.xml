@@ -32,9 +32,6 @@
         tools:layout="@layout/fragment_recipe_detail"
         android:label="{name}">
         <argument
-            android:name="recipe"
-            app:argType="com.ekosoftware.misrecetas.domain.model.Recipe" />
-        <argument
             android:name="name"
             app:argType="string" />
         <action
@@ -48,6 +45,10 @@
     <fragment
         android:id="@+id/addEditRecipeFragment"
         android:name="com.ekosoftware.misrecetas.presentation.main.ui.addedit.AddEditRecipeFragment"
-        android:label="AddEditRecipeFragment"
-        tools:layout="@layout/fragment_add_edit_recipe"/>
+        tools:layout="@layout/fragment_add_edit_recipe">
+        <argument
+            android:name="recipe"
+            app:argType="com.ekosoftware.misrecetas.domain.model.Recipe"
+            app:nullable="true" />
+    </fragment>
 </navigation>
