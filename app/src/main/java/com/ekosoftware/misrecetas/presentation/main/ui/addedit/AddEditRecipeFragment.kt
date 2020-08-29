@@ -36,9 +36,13 @@ import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.util.GlideApp
 import com.ekosoftware.misrecetas.util.SublistItemTouchHelper
 import com.ekosoftware.misrecetas.util.hideKeyboard
+import com.ekosoftware.misrecetas.util.showKeyboard
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.theartofdev.edmodo.cropper.CropImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.util.*
 
 class AddEditRecipeFragment : Fragment() {
@@ -131,26 +135,28 @@ class AddEditRecipeFragment : Fragment() {
     )
 
     private fun initButtons() = binding.run {
-        buttonAddIngredient.setOnClickListener {
-            addEmptyItems(ingredientsList, ingredientsAdapter, ingredientsList.size)
+        buttonAddIngredient.setOnClickListener { addEmptyItems(ingredientsList, ingredientsAdapter, ingredientsList.size) }
+        buttonAddInstruction.setOnClickListener { addEmptyItems(instructionsList, instructionsAdapter, instructionsList.size) }
+        listOf(noImageAddedText, buttonEditImage, recipeImage).forEach {
+            it.setOnClickListener { requireContext().showImageOptionsDialog() }
         }
-        buttonAddInstruction.setOnClickListener {
-            addEmptyItems(instructionsList, instructionsAdapter, instructionsList.size)
-        }
-        listOf(
-            noImageAddedText,
-            buttonEditImage,
-            recipeImage
-        ).forEach { it.setOnClickListener { requireContext().showImageOptionsDialog() } }
     }
 
-    private fun populateUI() = receivedRecipe.let {
-        setIngredients(it?.ingredients)
-        setInstructions(it?.instructions)
-        setInfo(it)
-        binding.recipeImage.setImage(it)
+    private fun populateUI() {
+        setIngredients(receivedRecipe?.ingredients)
+        setInstructions(receivedRecipe?.instructions)
+        setInfo(receivedRecipe)
+        binding.recipeImage.setImage(receivedRecipe)
+        fixFocus()
+    }
+
+    // Scrolls up to recipe's image, and focus on name's EditText
+    private fun fixFocus() = CoroutineScope(Main).launch {
         binding.recipeImage.requestFocus()
         binding.txtName.requestFocus()
+        binding.txtName.setText(binding.txtName.text.toString()/*binding.txtName.text?.append("")*/)
+        binding.scrollView.post { binding.scrollView.scrollTo(0, 0) }
+        showKeyboard()
     }
 
     private fun addEmptyItems(list: MutableList<String>, adapter: SublistRecyclerAdapter, vararg indexes: Int) {
@@ -161,11 +167,7 @@ class AddEditRecipeFragment : Fragment() {
         adapter.apply {
             submitList(list)
             notifyDataSetChanged()
-            //notifyItemRangeInserted(indexes[0], indexes.size)
         }
-        binding.recipeImage.requestFocus()
-        binding.txtName.setText("")
-        binding.txtName.requestFocus()
     }
 
     /*private fun clearList(list: MutableList<String>, adapter: SublistRecyclerAdapter) {
@@ -235,27 +237,19 @@ class AddEditRecipeFragment : Fragment() {
 
     private var imageUploading = false
 
-    private fun uploadImageObserver(): Observer<WorkInfo> {
-        return Observer { workInfo ->
-            if (workInfo != null && workInfo.state.isFinished) {
-                hideImageProcessing()
-                workInfo.outputData.run {
-                    /*getString(KEY_IMAGE_URI)?.let { originalUri ->
-                        imageHolder = Uri.parse(originalUri)
-                    }*/
-                    getString(KEY_OUTPUT_DOWNLOAD_IMAGE_URI)?.let { downloadUrl ->
-                        //receivedRecipe?.imageUrl = downloadUrl
-                        imageHolder = Uri.parse(downloadUrl)
-                    }
-                    binding.buttonEditImage.visibility = View.VISIBLE
-                    imageUploading = false
-                }
-            } else {
-                val progress = workInfo.progress
-                val value = progress.getInt(Progress, 0)
-                imageUploading = value in 1..99
-                showImageProcessing(value)
+    private fun uploadImageObserver(): Observer<WorkInfo> = Observer { workInfo ->
+        if (workInfo != null && workInfo.state.isFinished) {
+            hideImageProcessing()
+            workInfo.outputData.run {
+                getString(KEY_OUTPUT_DOWNLOAD_IMAGE_URI)?.let { downloadUrl -> imageHolder = Uri.parse(downloadUrl) }
+                binding.buttonEditImage.visibility = View.VISIBLE
+                imageUploading = false
             }
+        } else {
+            val progress = workInfo.progress
+            val value = progress.getInt(Progress, 0)
+            imageUploading = value in 0..99
+            showImageProcessing(value)
         }
     }
 
@@ -415,6 +409,9 @@ class AddEditRecipeFragment : Fragment() {
             return
         }
         addEmptyItems(ingredientsList, ingredientsAdapter, 0, 1)
+        binding.recipeImage.requestFocus()
+        binding.txtName.setText(binding.txtName.text.toString())
+        binding.txtName.requestFocus()
     }
 
     private fun setInstructions(instructions: List<String>?) {
@@ -427,6 +424,9 @@ class AddEditRecipeFragment : Fragment() {
             return
         }
         addEmptyItems(instructionsList, instructionsAdapter, 0, 1)
+        binding.recipeImage.requestFocus()
+        binding.txtName.setText(binding.txtName.text.toString())
+        binding.txtName.requestFocus()
     }
 
     private fun areFieldsComplete(): Boolean {
