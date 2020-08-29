@@ -73,12 +73,6 @@ class MainViewModel @ViewModelInject constructor(
         detailRecipe.value = recipe
     }
 
-    val selectedRecipe = MutableLiveData<Recipe?>()
-
-    fun selectRecipe(recipe: Recipe?) {
-        selectedRecipe.value = recipe
-    }
-
     private val workManager = WorkManager.getInstance(appContext)
 
     private val uploadImageRequest = MutableLiveData<OneTimeWorkRequest>()
@@ -106,6 +100,10 @@ class MainViewModel @ViewModelInject constructor(
         }
         builder.putString(KEY_IMAGE_NAME, name)
         return builder.build()
+    }
+
+    fun cancelImageUpload() = uploadImageRequest.value?.id?.let {
+        workManager.cancelWorkById(it)
     }
 
     fun deleteImage(recipeId: String?, uuid: String) = viewModelScope.launch { recipeRepo.deleteImage(recipeId, uuid) }

@@ -82,4 +82,6 @@
     <string name="uploading_resources">Cargando recursos</string>
     <string name="saving">Guardando</string>
     <string name="deleting">Borrando</string>
+    <string name="cancel_image_upload_and_continue">Aun se está cargando la imagen. ¿Querés interrumpir la carga y guardar de todos modos?</string>
+    <string name="continue_">Continuar</string>
 </resources>

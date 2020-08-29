@@ -35,8 +35,7 @@ class UploadImageWorker(context: Context, params: WorkerParameters) : CoroutineW
             // Publish 0 - Future feature
             setProgress(firstUpdate)
 
-            val ref = FirebaseStorage.getInstance().reference.child("$name.jpg")
-            ref.delete()
+            val ref = FirebaseStorage.getInstance().reference.child("${RecipesDataSource.IMAGES_BUCKET}$name.jpg")
             val uploadTask = ref.putFile(Uri.parse(resourceUri))
 
             uploadTask.addOnProgressListener {

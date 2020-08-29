@@ -27,14 +27,6 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-fun View.hide() {
-    visibility = View.GONE
-}
-
-fun View.show() {
-    visibility = View.VISIBLE
-}
-
 fun Recipe.isNotEqual(recipe: Recipe) : Boolean {
     return this.name != recipe.name
             || this.description != recipe.description

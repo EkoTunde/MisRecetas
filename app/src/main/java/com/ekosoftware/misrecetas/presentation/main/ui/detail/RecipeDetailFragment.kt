@@ -102,7 +102,7 @@ class RecipeDetailFragment : Fragment() {
     }
 
     private fun editRecipe() {
-        mainViewModel.selectRecipe(currentRecipe)
+        //mainViewModel.selectRecipe(currentRecipe)
         val action = RecipeDetailFragmentDirections.actionRecipeDetailFragmentToAddEditRecipeFragment(currentRecipe)
         findNavController().navigate(action)
     }

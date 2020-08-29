@@ -1,5 +1,6 @@
 package com.ekosoftware.misrecetas.presentation.main.ui.addedit
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,12 +26,16 @@ import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.KEY_O
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.Progress
 import com.ekosoftware.misrecetas.databinding.FragmentAddEditRecipeBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
+import com.ekosoftware.misrecetas.presentation.main.ui.addedit.TwoOptionsBottomSheetDialog.Companion.OPTION_1
+import com.ekosoftware.misrecetas.presentation.main.ui.addedit.TwoOptionsBottomSheetDialog.Companion.OPTION_2
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.SublistInteraction
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.SublistRecyclerAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.Type
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.Event
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
-import com.ekosoftware.misrecetas.util.*
+import com.ekosoftware.misrecetas.util.GlideApp
+import com.ekosoftware.misrecetas.util.SublistItemTouchHelper
+import com.ekosoftware.misrecetas.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.theartofdev.edmodo.cropper.CropImage
@@ -104,8 +109,7 @@ class AddEditRecipeFragment : Fragment() {
                 mainViewModel.showRecipeDetails(recipe) // Will update details fragment
                 mainViewModel.startNetworkOperation(Event.UPDATE, recipe)
             }
-        } else {
-            mainViewModel.selectRecipe(null)
+        } else { // When adding a new recipe
             mainViewModel.startNetworkOperation(Event.ADD, recipe)
         }
         findNavController().navigateUp()
@@ -133,14 +137,18 @@ class AddEditRecipeFragment : Fragment() {
         buttonAddInstruction.setOnClickListener {
             addEmptyItems(instructionsList, instructionsAdapter, instructionsList.size)
         }
-        listOf(noImageAddedText, buttonEditImage, recipeImage).forEach { it.setOnClickListener { showImageOptionsDialog() } }
+        listOf(
+            noImageAddedText,
+            buttonEditImage,
+            recipeImage
+        ).forEach { it.setOnClickListener { requireContext().showImageOptionsDialog() } }
     }
 
     private fun populateUI() = receivedRecipe.let {
         setIngredients(it?.ingredients)
         setInstructions(it?.instructions)
         setInfo(it)
-        binding.recipeImage.setImage(it?.imageUrl)
+        binding.recipeImage.setImage(it)
         binding.recipeImage.requestFocus()
         binding.txtName.requestFocus()
     }
@@ -166,40 +174,54 @@ class AddEditRecipeFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }*/
 
-    private fun showImageOptionsDialog() =
-        ImageOptionsBottomSheetDialog(bottomSheetListener).show(requireActivity().supportFragmentManager, "imageOptionsDialog")
-
-    private val bottomSheetListener = object : ImageOptionsBottomSheetDialog.BottomSheetListener {
-        override fun onOptionSelected(action: Int) {
-            if (action == ImageOptionsBottomSheetDialog.EDIT) editImage()
-            else { // Delete image
-                GlideApp.with(this@AddEditRecipeFragment)
-                    .load(ContextCompat.getDrawable(requireContext(), R.drawable.non_image_placeholder)).into(binding.recipeImage)
-                imageUUID ?: receivedRecipe?.imageUUID?.let {
-                    mainViewModel.deleteImage(receivedRecipe?.id, it)
+    private fun Context.showImageOptionsDialog() {
+        val details = DialogDetails(
+            null,
+            getString(R.string.add_edit_image_option),
+            R.drawable.ic_outline_camera_alt_24,
+            getString(R.string.delete_image_option),
+            R.drawable.ic_outline_delete_outline_24
+        )
+        TwoOptionsBottomSheetDialog(details).apply {
+            setOnBottomSheetListener(object : TwoOptionsBottomSheetDialog.BottomSheetListener {
+                override fun onOptionSelected(action: Int) {
+                    when (action) {
+                        OPTION_1 -> editImage()
+                        OPTION_2 -> deleteImage()
+                    }
                 }
-                binding.recipeImage.setImageDrawable(null)
-                binding.buttonEditImage.hide()
-                binding.noImageAddedText.show()
-                imageHolder = null
-            }
-        }
+            })
+        }.show(requireActivity().supportFragmentManager, "imageOptionsDialog")
     }
 
     // Launch image selection
     private fun editImage() = CropImage.activity().start(requireActivity(), this@AddEditRecipeFragment)
+
+    private fun deleteImage() {
+        // Clear image from UI
+        GlideApp.with(this@AddEditRecipeFragment)
+            .load(ContextCompat.getDrawable(requireContext(), R.drawable.non_image_placeholder)).into(binding.recipeImage)
+
+        // Informs ViewModel
+        imageUUID ?: receivedRecipe?.imageUUID?.let { mainViewModel.deleteImage(receivedRecipe?.id, it) }
+
+        //binding.recipeImage.setImageDrawable(null)
+        binding.buttonEditImage.visibility = View.GONE
+        binding.noImageAddedText.visibility = View.VISIBLE
+        imageHolder = null
+    }
 
     // To handle ImageCropperActivity's results
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == AppCompatActivity.RESULT_OK) {
-                val result = CropImage.getActivityResult(data)
-                val resultUri = result.uri
-                GlideApp.with(this).load(resultUri).centerCrop().into(binding.recipeImage)
-                imageUUID = receivedRecipe?.imageUUID ?: UUID.randomUUID().toString()
-                subscribeUploadImageWorkObserver()
-                mainViewModel.uploadImage(resultUri, imageUUID!!)
+                CropImage.getActivityResult(data).uri.let { resultUri ->
+                    GlideApp.with(this).load(resultUri).centerCrop().into(binding.recipeImage)
+                    subscribeUploadImageWorkObserver()
+                    imageUUID = receivedRecipe?.imageUUID ?: UUID.randomUUID().toString()
+                    mainViewModel.uploadImage(resultUri, imageUUID!!)
+                }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Snackbar.make(binding.parentLayout, R.string.error_getting_image, Snackbar.LENGTH_LONG)
                     .setAction(R.string.retry) { editImage() }
@@ -208,26 +230,10 @@ class AddEditRecipeFragment : Fragment() {
         }
     }
 
-    private fun subscribeSelectedRecipeObserver() =
-        mainViewModel.selectedRecipe.observe(viewLifecycleOwner, selectedRecipeObserver())
-
-    private fun selectedRecipeObserver(): Observer<Recipe?> = Observer {
-        if (it != null) binding.toolbarAddEdit.title = requireContext().getString(R.string.edit_recipe)
-        receivedRecipe = it
-        setIngredients(it?.ingredients)
-        setInstructions(it?.instructions)
-        setInfo(it)
-        binding.recipeImage.setImage(it?.imageUrl)
-        binding.recipeImage.requestFocus()
-        binding.txtName.requestFocus()
-        /*lifecycleScope.launch {
-            binding.recipeImage.requestFocus()
-            binding.txtName.requestFocus()
-        }*/
-    }
-
     private fun subscribeUploadImageWorkObserver() =
         mainViewModel.uploadImageWork.observe(viewLifecycleOwner, uploadImageObserver())
+
+    private var imageUploading = false
 
     private fun uploadImageObserver(): Observer<WorkInfo> {
         return Observer { workInfo ->
@@ -242,10 +248,12 @@ class AddEditRecipeFragment : Fragment() {
                         imageHolder = Uri.parse(downloadUrl)
                     }
                     binding.buttonEditImage.visibility = View.VISIBLE
+                    imageUploading = false
                 }
             } else {
                 val progress = workInfo.progress
                 val value = progress.getInt(Progress, 0)
+                imageUploading = value in 1..99
                 showImageProcessing(value)
             }
         }
@@ -265,8 +273,12 @@ class AddEditRecipeFragment : Fragment() {
         progressBarImageLoading.progress = 0
     }
 
-    private fun ImageView.setImage(imageUrl: String?) = imageUrl?.let {
+    private fun ImageView.setImage(recipe: Recipe?) = recipe?.imageUrl?.takeIf { it.isNotEmpty() }?.let {
         GlideApp.with(requireContext()).load(it).centerCrop().into(this)
+        updateUIForImageSet()
+    }
+
+    private fun updateUIForImageSet() {
         hideImageProcessing()
         binding.noImageAddedText.visibility = View.GONE
         binding.buttonEditImage.visibility = View.VISIBLE
@@ -435,7 +447,36 @@ class AddEditRecipeFragment : Fragment() {
             ingredientsList.isNullOrEmpty() -> errorMessage(Type.INGREDIENTS).publishSnackbar()
             // If no instructions have been added, show error Snackbar
             instructionsList.isNullOrEmpty() -> errorMessage(Type.INSTRUCTIONS).publishSnackbar()
+            imageUploading -> {
+                requireContext().showCancelImageUploadAndSaveOptionDialog()
+                false
+            }
             else -> true
+        }
+    }
+
+    private fun Context.showCancelImageUploadAndSaveOptionDialog() {
+        DialogDetails(
+            title = getString(R.string.cancel_image_upload_and_continue),
+            optionOne = getString(R.string.continue_),
+            optionOneResId = R.drawable.ic_baseline_done_24,
+            optionTwo = getString(R.string.cancel),
+            optionTwoResId = R.drawable.ic_outline_clear_24
+        ).let { details ->
+            TwoOptionsBottomSheetDialog(details).let { dialog ->
+                dialog.setOnBottomSheetListener(object : TwoOptionsBottomSheetDialog.BottomSheetListener {
+                    override fun onOptionSelected(action: Int) {
+                        when (action) {
+                            OPTION_1 -> {
+                                imageUploading = false
+                                mainViewModel.cancelImageUpload()
+                                save(currentRecipe())
+                            }
+                        }
+                    }
+                })
+                dialog.show(requireActivity().supportFragmentManager, "cancel image upload and save")
+            }
         }
     }
 
