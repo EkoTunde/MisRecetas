@@ -117,58 +117,6 @@
 
                     </FrameLayout>
 
-                 <!--   <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/darker_gray"
-                        android:gravity="center"
-                        android:minHeight="200dp"
-                        android:orientation="vertical">
-
-                        <FrameLayout
-                            android:id="@+id/image_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="top"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:id="@+id/recipe_image"
-                                android:layout_width="match_parent"
-                                android:layout_height="300dp"
-                                android:contentDescription="@string/app_name"
-                                android:maxHeight="500dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/button_edit_image"
-                                style="@style/Widget.MaterialComponents.Button"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="end|bottom"
-                                android:layout_margin="16dp"
-                                android:contentDescription="@string/edit_recipe_image"
-                                android:text="@string/edit"
-                                app:icon="@drawable/ic_outline_edit_24" />
-
-                        </FrameLayout>
-
-                        <TextView
-                            android:id="@+id/recipe_placeholder_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="@android:color/transparent"
-                            android:contentDescription="@string/click_here_to_add_image"
-                            android:drawableTop="@drawable/ic_outline_camera_alt_24"
-                            android:lines="2"
-                            android:padding="16dp"
-                            android:text="@string/add_recipe_photo_image"
-                            android:textAlignment="center"
-                            android:tint="@color/colorDarkerGrey"
-                            app:drawableTint="#454545" />
-
-                    </FrameLayout>-->
-
                     <!-- BASIC INFO -->
                     <LinearLayout
                         android:layout_width="match_parent"

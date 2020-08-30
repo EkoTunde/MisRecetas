@@ -84,4 +84,11 @@
     <string name="deleting">Borrando</string>
     <string name="cancel_image_upload_and_continue">Aun se está cargando la imagen. ¿Querés interrumpir la carga y guardar de todos modos?</string>
     <string name="continue_">Continuar</string>
+    <string name="cook">Cocinar</string>
+    <string name="delete_mayus">Eliminar</string>
+    <string name="next">Siguiente</string>
+    <string name="quit">Salir</string>
+    <string name="previous">Anterior</string>
+    <string name="recipe_must_contain_instructions_to_cook">¡La receta no tiene instrucciones para cocinar!</string>
+    <string name="current_step_placeholder_extended">Paso #%d</string>
 </resources>

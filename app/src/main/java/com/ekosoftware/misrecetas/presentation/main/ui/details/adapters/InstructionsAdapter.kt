@@ -1,4 +1,4 @@
-package com.ekosoftware.misrecetas.presentation.main.ui.detail.adapters
+package com.ekosoftware.misrecetas.presentation.main.ui.details.adapters
 
 import android.content.Context
 import android.view.LayoutInflater

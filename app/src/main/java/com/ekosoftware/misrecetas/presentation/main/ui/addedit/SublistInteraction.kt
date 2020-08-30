@@ -1,4 +1,4 @@
-package com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter
+package com.ekosoftware.misrecetas.presentation.main.ui.addedit
 
 interface SublistInteraction {
     fun addLine(position: Int, fromItemCurrentCursorIndex: Int)

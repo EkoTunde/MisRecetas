@@ -28,9 +28,6 @@ import com.ekosoftware.misrecetas.databinding.FragmentAddEditRecipeBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.TwoOptionsBottomSheetDialog.Companion.OPTION_1
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.TwoOptionsBottomSheetDialog.Companion.OPTION_2
-import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.SublistInteraction
-import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.SublistRecyclerAdapter
-import com.ekosoftware.misrecetas.presentation.main.ui.addedit.adapter.Type
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.Event
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.util.GlideApp
@@ -88,7 +85,7 @@ class AddEditRecipeFragment : Fragment() {
         //subscribeSelectedRecipeObserver()
     }
 
-    // Adding/Editing fragments implement a different toolbar
+    // Adding/Editing fragment implement a different toolbar
     private fun initToolbar() {
         val appBarConfiguration = AppBarConfiguration(findNavController().graph)
         binding.toolbarAddEdit.setupWithNavController(findNavController(), appBarConfiguration)
@@ -495,6 +492,7 @@ class AddEditRecipeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         hideKeyboard()
+        _binding = null // To avoid leaks
         Log.d(TAG, "onDestroyView: $ingredientsList")
         //ingredientsList.clear()
         //instructionsList.clear()
