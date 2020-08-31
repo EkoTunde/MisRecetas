@@ -1,8 +1,10 @@
-package com.ekosoftware.misrecetas.presentation.main.ui.cook
+package com.ekosoftware.misrecetas.presentation.main.ui.cook.adapters
 
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.ekosoftware.misrecetas.presentation.main.ui.cook.CookFragment
+import com.ekosoftware.misrecetas.presentation.main.ui.cook.InstructionFragment
 import com.ekosoftware.misrecetas.presentation.main.ui.cook.InstructionFragment.Companion.INSTRUCTION_ARG
 import com.ekosoftware.misrecetas.presentation.main.ui.cook.InstructionFragment.Companion.STEP_ARG
 

@@ -21,7 +21,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:menu="@menu/menu_add_edit"
-            app:navigationIcon="@drawable/ic_outline_clear_24"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <ProgressBar

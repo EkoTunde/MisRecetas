@@ -25,25 +25,15 @@ class LoginFragment : Fragment() {
         const val RC_SIGN_IN = 1
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.exitBtn.setOnClickListener {
-            requireActivity().finishAndRemoveTask()
-        }
-
-        binding.continueBtn.setOnClickListener {
-            launchLoginFlow()
-        }
+        binding.exitBtn.setOnClickListener { requireActivity().finishAndRemoveTask() }
+        binding.continueBtn.setOnClickListener { launchLoginFlow() }
     }
 
     // Launches an intent to Firebase Auth UI Activity for handling user login
@@ -58,10 +48,7 @@ class LoginFragment : Fragment() {
 
         // Create and launch sign-in intent
         startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .build(),
+            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(),
             RC_SIGN_IN
         )
     }
@@ -78,6 +65,7 @@ class LoginFragment : Fragment() {
                 val welcomeUser = getString(R.string.welcome_user, user.displayName)
                 Toast.makeText(requireContext(), welcomeUser, Toast.LENGTH_SHORT).show()
                 startActivity(Intent(requireActivity(), MainActivity::class.java))
+                requireActivity().finish()
             } else {
                 // Error signing in
                 Snackbar.make(binding.root, R.string.retry, Snackbar.LENGTH_INDEFINITE)

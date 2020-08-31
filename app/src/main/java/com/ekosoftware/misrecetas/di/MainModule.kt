@@ -1,4 +1,4 @@
-package com.ekosoftware.misrecetas.modules
+package com.ekosoftware.misrecetas.di
 
 import com.ekosoftware.misrecetas.data.network.RecipesDataSource
 import com.ekosoftware.misrecetas.domain.network.RecipeRepo

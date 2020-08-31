@@ -16,12 +16,12 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.databinding.FragmentRecipeDetailsBinding
+import com.ekosoftware.misrecetas.domain.constants.Event
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.presentation.main.ui.details.adapters.IngredientsAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.details.adapters.InstructionsAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.details.adapters.MainContentAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.details.adapters.TitleAdapter
-import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.Event
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.util.GlideApp
 import com.google.firebase.storage.FirebaseStorage
@@ -78,6 +78,7 @@ class RecipeDetailsFragment : Fragment() {
             }
             R.id.menu_item_delete -> {
                 mainViewModel.startNetworkOperation(Event.DELETE, currentRecipe)
+                findNavController().navigateUp()
                 true
             }
             else -> false

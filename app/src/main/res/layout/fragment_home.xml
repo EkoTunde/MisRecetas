@@ -8,7 +8,7 @@
     tools:context=".presentation.main.ui.home.HomeFragment">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_add_edit"
+        android:id="@+id/toolbar_home"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
@@ -16,6 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_home"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/app_name" />
 
@@ -24,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_add_edit"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_home"
         tools:listitem="@layout/item_recipe" />
 
     <ProgressBar
@@ -35,6 +36,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/recycler_view_recipes_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_add_edit" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_home" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,11 +17,7 @@ class HomeLoginFragment : Fragment() {
     private var _binding: FragmentHomeLoginBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentHomeLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -29,8 +25,9 @@ class HomeLoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        FirebaseAuth.getInstance().currentUser?.let {
+        FirebaseAuth.getInstance().currentUser?.let { // if there is a user logged in
             startActivity(Intent(requireActivity(), MainActivity::class.java))
+            requireActivity().finish()
         }
         findNavController().navigate(R.id.loginFragment)
     }

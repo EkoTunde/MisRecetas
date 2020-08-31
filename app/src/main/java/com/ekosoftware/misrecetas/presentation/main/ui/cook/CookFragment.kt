@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.databinding.FragmentCookBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
+import com.ekosoftware.misrecetas.presentation.main.ui.cook.adapters.BottomSheetIngredientsRecyclerAdapter
+import com.ekosoftware.misrecetas.presentation.main.ui.cook.adapters.BottomSheetIngredientsTitleAdapter
+import com.ekosoftware.misrecetas.presentation.main.ui.cook.adapters.CookViewPager2Adapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class CookFragment() : Fragment() {
@@ -28,7 +31,7 @@ class CookFragment() : Fragment() {
     private lateinit var recipe: Recipe
 
     private lateinit var concatAdapter: ConcatAdapter
-    private lateinit var ingredientsAdapter: CheckableIngredientsRecyclerAdapter
+    private lateinit var ingredientsAdapter: BottomSheetIngredientsRecyclerAdapter
     private lateinit var titleAdapter: BottomSheetIngredientsTitleAdapter
     private lateinit var pager2Adapter: CookViewPager2Adapter
 
@@ -68,9 +71,10 @@ class CookFragment() : Fragment() {
     private fun initRecyclerView() = binding.bottomSheetRvIngredients.apply {
         layoutManager = LinearLayoutManager(this@CookFragment.requireContext())
         titleAdapter = BottomSheetIngredientsTitleAdapter(requireContext(), requireContext().getString(R.string.ingredients), onStateImagePressedListener)
-        ingredientsAdapter = CheckableIngredientsRecyclerAdapter(requireContext(), ingredientsCheckedListener)
+        ingredientsAdapter = BottomSheetIngredientsRecyclerAdapter(requireContext()/*, ingredientsCheckedListener*/)
         concatAdapter = ConcatAdapter(titleAdapter, ingredientsAdapter)
         adapter = concatAdapter
+        ingredientsAdapter.submitList(recipe.ingredients!!)
     }
 
     private fun initBottomSheetListener() {
@@ -87,11 +91,11 @@ class CookFragment() : Fragment() {
         })
     }
 
-    private val ingredientsCheckedListener = object : CheckableIngredientsRecyclerAdapter.OnIngredientCheckedListener {
+    /*private val ingredientsCheckedListener = object : BottomSheetIngredientsRecyclerAdapter.OnIngredientCheckedListener {
         override fun onChecked(position: Int, isChecked: Boolean) {
 
         }
-    }
+    }*/
 
     private val onStateImagePressedListener = object : BottomSheetIngredientsTitleAdapter.OnStateImagePressedListener {
         override fun onPressed() {

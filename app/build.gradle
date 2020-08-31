@@ -51,7 +51,6 @@ dependencies {
     def coroutines_version = "1.3.8"
     def hilt_jetpack_version = "1.0.0-alpha02"
     def firebase_storage_version = "19.2.0"
-    def room_version = "2.2.5"
 
     // Base dependencies
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -96,6 +95,7 @@ dependencies {
     // Firebase
     implementation "com.google.firebase:firebase-core:17.5.0"
     implementation "com.firebaseui:firebase-ui-auth:6.2.1"          // AuthUI
+    implementation 'com.google.firebase:firebase-auth-ktx:19.3.2'   // Auth + ktx
     implementation "com.google.firebase:firebase-firestore:21.6.0"  // Firestore
     implementation "com.google.firebase:firebase-storage:$firebase_storage_version"   // Storage
     implementation "com.google.firebase:firebase-storage-ktx:$firebase_storage_version" // Storage with ktx

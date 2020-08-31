@@ -12,9 +12,12 @@ import androidx.work.WorkManager
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.KEY_IMAGE_NAME
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.KEY_IMAGE_URI
+import com.ekosoftware.misrecetas.domain.constants.Event
+import com.ekosoftware.misrecetas.domain.constants.FirebaseError
+import com.ekosoftware.misrecetas.domain.constants.Result
+import com.ekosoftware.misrecetas.domain.model.EventResult
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.domain.network.RecipeRepo
-import com.ekosoftware.misrecetas.util.FirebaseError
 import com.ekosoftware.misrecetas.vo.Resource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers.IO
@@ -49,16 +52,17 @@ class MainViewModel @ViewModelInject constructor(
 
     fun startNetworkOperation(event: Event, recipe: Recipe) = viewModelScope.launch {
         publishEventResult(EventResult(event, Result.LOADING, recipe))
+
         try {
+
             val recipeName = when (event) {
                 Event.ADD -> recipeRepo.addRecipe(recipe)
                 Event.UPDATE -> recipeRepo.updateRecipe(recipe)
                 Event.DELETE -> recipeRepo.deleteRecipe(recipe)
             }
-            if (recipeName.isNotEmpty()) {
-                //showRecipeDetails(recipe)
-                publishEventResult(EventResult(event, Result.SUCCESS, recipe))
-            } else throw IllegalArgumentException("Recipe name can't be null")
+            if (recipeName.isNotEmpty()) publishEventResult(EventResult(event, Result.SUCCESS, recipe))
+            else throw IllegalArgumentException("Recipe name can't be null")
+
         } catch (e: Exception) {
             val failureMsg = if (e.message != null && e.message!!.contains("Missing or insufficient permissions")) {
                 FirebaseError.ERROR_MISSING_PERMISSIONS
@@ -108,18 +112,3 @@ class MainViewModel @ViewModelInject constructor(
 
     fun deleteImage(recipeId: String?, uuid: String) = viewModelScope.launch { recipeRepo.deleteImage(recipeId, uuid) }
 }
-
-enum class Event {
-    ADD, UPDATE, DELETE
-}
-
-enum class Result {
-    LOADING, SUCCESS, FAILURE
-}
-
-data class EventResult(
-    val event: Event,
-    val result: Result,
-    val recipe: Recipe,
-    var failureMsg: FirebaseError = FirebaseError.NONE
-)

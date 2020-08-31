@@ -91,4 +91,11 @@
     <string name="previous">Anterior</string>
     <string name="recipe_must_contain_instructions_to_cook">¡La receta no tiene instrucciones para cocinar!</string>
     <string name="current_step_placeholder_extended">Paso #%d</string>
+    <string name="sign_out">Cerrar sesión</string>
+    <string name="delete_user">Eliminar cuenta</string>
+    <string name="user_profile_picture">La imagen de perfil del usuario</string>
+    <string name="account">Cuenta</string>
+    <string name="couldnt_complete_operation">La operación solicitada no se pudo completar</string>
+    <string name="successfully_updated_profile">Se actualizó tu perfil</string>
+    <string name="error_while_updating_profile">Ocurrió un error al actualizar tu perfil</string>
 </resources>

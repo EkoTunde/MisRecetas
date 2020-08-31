@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,10 +24,10 @@ import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.KEY_OUTPUT_DOWNLOAD_IMAGE_URI
 import com.ekosoftware.misrecetas.data.network.UploadImageWorker.Companion.Progress
 import com.ekosoftware.misrecetas.databinding.FragmentAddEditRecipeBinding
+import com.ekosoftware.misrecetas.domain.constants.Event
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.TwoOptionsBottomSheetDialog.Companion.OPTION_1
 import com.ekosoftware.misrecetas.presentation.main.ui.addedit.TwoOptionsBottomSheetDialog.Companion.OPTION_2
-import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.Event
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
 import com.ekosoftware.misrecetas.util.GlideApp
 import com.ekosoftware.misrecetas.util.SublistItemTouchHelper
@@ -414,7 +413,6 @@ class AddEditRecipeFragment : Fragment() {
     private fun setInstructions(instructions: List<String>?) {
         instructions?.let {
             //clearList(instructionsList, instructionsAdapter)
-            Log.d(TAG, "setInstructions: ADDING")
             instructionsList.addAll(it)
             instructionsAdapter.submitList(instructionsList)
             instructionsAdapter.notifyDataSetChanged()
@@ -488,13 +486,9 @@ class AddEditRecipeFragment : Fragment() {
         return false
     }
 
-    private val TAG = "AddEditRecipeFragment"
     override fun onDestroyView() {
         super.onDestroyView()
         hideKeyboard()
         _binding = null // To avoid leaks
-        Log.d(TAG, "onDestroyView: $ingredientsList")
-        //ingredientsList.clear()
-        //instructionsList.clear()
     }
 }

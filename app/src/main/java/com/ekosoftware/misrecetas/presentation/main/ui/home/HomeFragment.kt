@@ -15,6 +15,7 @@ import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.databinding.FragmentHomeBinding
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.presentation.main.ui.viewmodel.MainViewModel
+import com.ekosoftware.misrecetas.util.hideKeyboard
 import com.ekosoftware.misrecetas.vo.Resource
 import kotlinx.android.synthetic.main.fragment_home.*
 
@@ -30,20 +31,16 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
 
     private val mainViewModel by activityViewModels<MainViewModel>()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
         setUpRecyclerView()
+        hideKeyboard()
 
         fetchData()
     }
@@ -51,7 +48,18 @@ class HomeFragment : Fragment(), RecipesRecyclerAdapter.Interaction {
     private fun setUpNavigation() {
         val navController = findNavController()
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.toolbarAddEdit.setupWithNavController(navController, appBarConfiguration)
+        binding.toolbarHome.setupWithNavController(navController, appBarConfiguration)
+        binding.toolbarHome.setOnMenuItemClickListener {
+            println("ItemID is ${it.itemId}, while item account id is -> ${R.id.menu_item_account}")
+            when (it.itemId) {
+                R.id.menu_item_account -> {
+                    val action = HomeFragmentDirections.actionHomeFragmentToProfileFragment()
+                    navController.navigate(action)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun setUpRecyclerView() = recycler_view_recipes_list.apply {
