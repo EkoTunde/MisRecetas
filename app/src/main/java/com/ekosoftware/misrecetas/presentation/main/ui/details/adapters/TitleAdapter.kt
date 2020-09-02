@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.base.BaseViewHolder
+import com.ekosoftware.misrecetas.core.BaseViewHolder
 import kotlinx.android.synthetic.main.item_detail_title.view.*
 
 class TitleAdapter(private val context: Context, private val title: String) : RecyclerView.Adapter<BaseViewHolder<*>>() {

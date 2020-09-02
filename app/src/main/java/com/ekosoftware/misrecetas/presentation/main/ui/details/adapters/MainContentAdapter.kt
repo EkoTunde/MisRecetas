@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.base.BaseViewHolder
+import com.ekosoftware.misrecetas.core.BaseViewHolder
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import kotlinx.android.synthetic.main.item_detail_main_content.view.*
 

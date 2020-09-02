@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import com.ekosoftware.misrecetas.domain.model.Ingredient
 import com.ekosoftware.misrecetas.domain.model.Recipe
 
 fun IntArray.contains(integer: Int): Boolean {
@@ -50,3 +51,7 @@ fun Recipe.isNotEqual(recipe: Recipe): Boolean {
             || this.ingredients != recipe.ingredients
             || this.instructions != recipe.instructions
 }
+
+fun List<String>?.asMutableIngredientsList() = this?.mapIndexed { index, name ->
+    Ingredient(index, name, false)
+}?.toMutableList() ?: mutableListOf()

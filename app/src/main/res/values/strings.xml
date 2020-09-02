@@ -98,4 +98,5 @@
     <string name="couldnt_complete_operation">La operación solicitada no se pudo completar</string>
     <string name="successfully_updated_profile">Se actualizó tu perfil</string>
     <string name="error_while_updating_profile">Ocurrió un error al actualizar tu perfil</string>
+    <string name="save_progress">Guardar progreso</string>
 </resources>

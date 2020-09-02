@@ -1,4 +1,4 @@
-package com.ekosoftware.misrecetas.base
+package com.ekosoftware.misrecetas.core
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

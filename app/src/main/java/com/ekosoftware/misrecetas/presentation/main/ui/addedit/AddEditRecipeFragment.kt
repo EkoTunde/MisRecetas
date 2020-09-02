@@ -88,7 +88,7 @@ class AddEditRecipeFragment : Fragment() {
     private fun initToolbar() {
         val appBarConfiguration = AppBarConfiguration(findNavController().graph)
         binding.toolbarAddEdit.setupWithNavController(findNavController(), appBarConfiguration)
-        binding.toolbarAddEdit.title = requireContext().getString(R.string.add_recipe)
+        binding.toolbarAddEdit.title = receivedRecipe?.name ?: requireContext().getString(R.string.add_recipe)
 
         // Handle menu item clicks - works different than in an Activity
         binding.toolbarAddEdit.setOnMenuItemClickListener {
@@ -120,7 +120,6 @@ class AddEditRecipeFragment : Fragment() {
         description = binding.txtDescription.text.toString(),
         timeRequired = binding.txtTimeRequired.text.toString().toLong(),
         servings = binding.txtServings.text.toString().toLong(),
-        isFavorite = false,
         id = receivedRecipe?.id,
         imageUrl = imageHolder?.toString() ?: receivedRecipe?.imageUrl,
         imageUUID = receivedRecipe?.imageUUID ?: imageUUID,

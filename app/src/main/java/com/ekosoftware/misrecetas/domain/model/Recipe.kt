@@ -18,6 +18,5 @@ data class Recipe(
     var ingredients: List<String>? = null,
     var instructions: List<String>? = null,
     var creationDate: Timestamp? = null,
-    var creator: String? = null,
-    var isFavorite: Boolean? = null
+    var creator: String? = null
 ) : Parcelable

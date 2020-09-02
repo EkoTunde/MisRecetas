@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ekosoftware.misrecetas.R
-import com.ekosoftware.misrecetas.base.BaseViewHolder
+import com.ekosoftware.misrecetas.core.BaseViewHolder
 import kotlinx.android.synthetic.main.item_detail_ingredients.view.*
 
 class IngredientsAdapter(private val context: Context) :

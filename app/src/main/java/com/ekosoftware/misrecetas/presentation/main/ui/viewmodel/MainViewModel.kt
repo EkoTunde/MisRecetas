@@ -111,4 +111,10 @@ class MainViewModel @ViewModelInject constructor(
     }
 
     fun deleteImage(recipeId: String?, uuid: String) = viewModelScope.launch { recipeRepo.deleteImage(recipeId, uuid) }
+
+    /*val currentlyCookedRecipe = MutableLiveData<Recipe>()
+
+    fun cookRecipe(recipe: Recipe) {
+        currentlyCookedRecipe.value = recipe
+    }*/
 }

@@ -13,13 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ekosoftware.misrecetas.R
 import com.ekosoftware.misrecetas.databinding.FragmentCookBinding
+import com.ekosoftware.misrecetas.domain.model.Ingredient
 import com.ekosoftware.misrecetas.domain.model.Recipe
 import com.ekosoftware.misrecetas.presentation.main.ui.cook.adapters.BottomSheetIngredientsRecyclerAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.cook.adapters.BottomSheetIngredientsTitleAdapter
 import com.ekosoftware.misrecetas.presentation.main.ui.cook.adapters.CookViewPager2Adapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-class CookFragment() : Fragment() {
+class CookFragment : Fragment() {
 
     companion object {
         const val RECIPE_ARG = "recipe"
@@ -38,10 +39,15 @@ class CookFragment() : Fragment() {
     private lateinit var bottomSheet: RecyclerView
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<RecyclerView>
 
+    private lateinit var ingredients: MutableList<Ingredient>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             recipe = it.getParcelable(RECIPE_ARG)!!
+            ingredients = recipe.ingredients?.mapIndexed { index, name ->
+                Ingredient(index, name, false)
+            }?.toMutableList() ?: mutableListOf()
         }
     }
 
@@ -59,8 +65,10 @@ class CookFragment() : Fragment() {
     }
 
     private fun initToolbar() {
-        val appBarConfiguration = AppBarConfiguration(findNavController().graph)
-        binding.toolbar.setupWithNavController(findNavController(), appBarConfiguration)
+        return binding.toolbar.setupWithNavController(
+            findNavController(),
+            AppBarConfiguration(findNavController().graph)
+        )
     }
 
     private fun initViewPager2() = binding.pager.apply {
@@ -70,11 +78,16 @@ class CookFragment() : Fragment() {
 
     private fun initRecyclerView() = binding.bottomSheetRvIngredients.apply {
         layoutManager = LinearLayoutManager(this@CookFragment.requireContext())
-        titleAdapter = BottomSheetIngredientsTitleAdapter(requireContext(), requireContext().getString(R.string.ingredients), onStateImagePressedListener)
-        ingredientsAdapter = BottomSheetIngredientsRecyclerAdapter(requireContext()/*, ingredientsCheckedListener*/)
+        titleAdapter = BottomSheetIngredientsTitleAdapter(
+            requireContext(),
+            requireContext().getString(R.string.ingredients),
+            onStateImagePressedListener
+        )
+        ingredientsAdapter = BottomSheetIngredientsRecyclerAdapter(requireContext(), ingredientsCheckedListener)
         concatAdapter = ConcatAdapter(titleAdapter, ingredientsAdapter)
         adapter = concatAdapter
-        ingredientsAdapter.submitList(recipe.ingredients!!)
+        ingredientsAdapter.submitList(ingredients)
+        ingredientsAdapter.notifyDataSetChanged()
     }
 
     private fun initBottomSheetListener() {
@@ -91,11 +104,12 @@ class CookFragment() : Fragment() {
         })
     }
 
-    /*private val ingredientsCheckedListener = object : BottomSheetIngredientsRecyclerAdapter.OnIngredientCheckedListener {
+    private val ingredientsCheckedListener = object : BottomSheetIngredientsRecyclerAdapter.OnIngredientCheckedListener {
         override fun onChecked(position: Int, isChecked: Boolean) {
-
+            ingredients[position].isChecked = isChecked
+            ingredientsAdapter.submitList(ingredients)
         }
-    }*/
+    }
 
     private val onStateImagePressedListener = object : BottomSheetIngredientsTitleAdapter.OnStateImagePressedListener {
         override fun onPressed() {
@@ -103,7 +117,8 @@ class CookFragment() : Fragment() {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 return
             }
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) bottomSheetBehavior.state =
+                BottomSheetBehavior.STATE_EXPANDED
         }
     }
 
