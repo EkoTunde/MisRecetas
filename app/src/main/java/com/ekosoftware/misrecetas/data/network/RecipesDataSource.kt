@@ -82,7 +82,6 @@ class RecipesDataSource {
             creator = CurrentUser.data.uid
             creationDate = Timestamp.now()
         }.also {
-            val docRef = recipesRef.add(it).await()
             return recipe.name!!
         }
     }
