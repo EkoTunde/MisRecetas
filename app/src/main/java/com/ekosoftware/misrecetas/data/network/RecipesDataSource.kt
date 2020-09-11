@@ -16,11 +16,12 @@ import kotlinx.coroutines.tasks.await
 class RecipesDataSource {
 
     companion object {
-        private val db = FirebaseFirestore.getInstance()
-        private val recipesRef = db.collection("recipes")
-        private val bucket = FirebaseStorage.getInstance().reference
         const val IMAGES_BUCKET = "recipes/images/"
     }
+
+    private val db by lazy { FirebaseFirestore.getInstance() }
+    private val recipesRef by lazy { db.collection("recipes") }
+    private val bucket by lazy { FirebaseStorage.getInstance().reference }
 
     @ExperimentalCoroutinesApi
     suspend fun getAllRecipes(): Flow<Resource<List<Recipe>>> = callbackFlow {
@@ -81,9 +82,9 @@ class RecipesDataSource {
             creator = CurrentUser.data.uid
             creationDate = Timestamp.now()
         }.also {
-            recipesRef.add(it).await()
+            val docRef = recipesRef.add(it).await()
+            return recipe.name!!
         }
-        return recipe.name!!
     }
 
     suspend fun updateRecipe(recipe: Recipe): String {

@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<resources>
-    <dimen name="list_item_spacing">16dp</dimen>
-    <dimen name="list_item_spacing_half">8dp</dimen>
-    <dimen name="fragment_appointment_width">8dp</dimen>
-    <dimen name="fragment_appointment_height">8dp</dimen>
-</resources>

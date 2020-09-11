@@ -5,8 +5,9 @@ import android.net.Uri
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.ekosoftware.misrecetas.data.network.UploadingImage.STOPPED
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
 
 class UploadImageWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
@@ -18,7 +19,6 @@ class UploadImageWorker(context: Context, params: WorkerParameters) : CoroutineW
         const val KEY_IMAGE_NAME = "image name"
     }
 
-    @ExperimentalCoroutinesApi
     override suspend fun doWork(): Result {
         return try {
 
@@ -28,24 +28,28 @@ class UploadImageWorker(context: Context, params: WorkerParameters) : CoroutineW
             // Get the UUID name for the image (used in case download url isn't save to Recipe)
             val name = inputData.getString(KEY_IMAGE_NAME)
 
-            // Progress 0 an 100 - Future feature
+            // Progress 0 and 100
             val firstUpdate = workDataOf(Progress to 0)
             val lastUpdate = workDataOf(Progress to 100)
 
-            // Publish 0 - Future feature
+            // Publish 0
             setProgress(firstUpdate)
 
-            val ref = FirebaseStorage.getInstance().reference.child("${RecipesDataSource.IMAGES_BUCKET}$name.jpg")
+            val ref: StorageReference = FirebaseStorage.getInstance().reference.child("${RecipesDataSource.IMAGES_BUCKET}$name.jpg")
             val uploadTask = ref.putFile(Uri.parse(resourceUri))
 
             uploadTask.addOnProgressListener {
                 if (this@UploadImageWorker.isStopped) {
-                    uploadTask.cancel()
+                    if (uploadTask.isInProgress) uploadTask.cancel()
+                    if (UploadingImage.currentState == STOPPED) {
+                        uploadTask.cancel()
+                    }
                     Result.failure()
                 }
 
                 // Get current progress - Future feature
                 val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
+
                 // Publish current progress - Future feature
                 setProgressAsync(workDataOf(Progress to progress))
             }

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txt_time_required"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
         tools:text="30'"
         app:drawableStartCompat="@drawable/ic_timer_18" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txt_servings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,6 @@
         android:weightSum="20">
 
         <ImageView
-            android:id="@+id/imageView"
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_weight="1"

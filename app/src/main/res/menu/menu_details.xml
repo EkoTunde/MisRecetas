@@ -3,13 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_item_edit"
-        android:title="@string/cook"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:icon="@drawable/ic_outline_edit_24" />
-
-    <item
         android:id="@+id/menu_item_delete"
         android:title="@string/delete_mayus"
         app:showAsAction="never"

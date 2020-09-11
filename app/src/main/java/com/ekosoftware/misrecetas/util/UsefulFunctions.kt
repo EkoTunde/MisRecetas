@@ -5,14 +5,20 @@ import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import com.ekosoftware.misrecetas.domain.model.Ingredient
-import com.ekosoftware.misrecetas.domain.model.Recipe
 
 fun IntArray.contains(integer: Int): Boolean {
     this.forEach {
         if (it == integer) return true
     }
     return false
+}
+
+fun View.show() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.hide() {
+    this.visibility = View.GONE
 }
 
 fun Fragment.hideKeyboard() {
@@ -40,18 +46,3 @@ fun Context.showKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.showSoftInput(view, 1)
 }
-
-fun Recipe.isNotEqual(recipe: Recipe): Boolean {
-    return this.name != recipe.name
-            || this.description != recipe.description
-            || this.timeRequired != recipe.timeRequired
-            || this.servings != recipe.servings
-            || this.imageUrl != recipe.imageUrl
-            || this.imageUUID != recipe.imageUUID
-            || this.ingredients != recipe.ingredients
-            || this.instructions != recipe.instructions
-}
-
-fun List<String>?.asMutableIngredientsList() = this?.mapIndexed { index, name ->
-    Ingredient(index, name, false)
-}?.toMutableList() ?: mutableListOf()
